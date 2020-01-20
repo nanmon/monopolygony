@@ -41,3 +41,26 @@
 .PropertyHut.right span {
     transform: rotate(-90deg);
 }
+
+.owner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    border: 1px solid white;
+}
+
+.left .owner {
+    top: 0;
+    right: 0;
+}
+
+.top .owner {
+    bottom: 0;
+    right: 0;
+}
+
+.right .owner {
+    bottom: 0;
+    left: 0;
+}

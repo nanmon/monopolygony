@@ -2,10 +2,31 @@
     width: 100vw;
     height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
     background-color: aqua;
 }
+
+@media (max-width: 100vh) {
+    .BoardScreen {
+        flex-direction: column;
+    }
+    .BoardScreen .after-board {
+        flex-direction: row !important;
+    }
+}
+
+.BoardScreen .after-board {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+/* @media (min-width: 70vh) and (max-width: 130vh) {
+    .BoardScreen .before-board,
+    .BoardScreen .after-board {
+        display: none;
+    }
+} */
 
 .BoardScreen .Board {
     width: min(100vh, 100vw);

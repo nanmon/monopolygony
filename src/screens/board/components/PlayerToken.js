@@ -5,7 +5,10 @@ function PlayerToken({ player }) {
     return (
         <div
             className="PlayerToken"
-            style={{ backgroundColor: player.color }}
+            style={{
+                backgroundColor: player.color,
+                borderColor: player.color === 'yellow' ? 'black' : 'white',
+            }}
         ></div>
     );
 }
