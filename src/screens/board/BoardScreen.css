@@ -4,12 +4,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: aqua;
 }
 
 .BoardScreen .Board {
     width: min(100vh, 100vw);
     height: min(100vh, 100vw);
     display: grid;
+    /* border: 1px solid black; */
     grid-template-rows: 2fr repeat(9, 1fr) 2fr;
     grid-template-columns: 2fr repeat(9, 1fr) 2fr;
     grid-template-areas:
@@ -28,9 +30,10 @@
 
 .BoardScreen .center {
     grid-area: center;
-    background-color: aqua;
+    border: 1px solid black;
 }
 
 .BoardScreen .tile {
     overflow: hidden;
+    border: 1px solid black;
 }

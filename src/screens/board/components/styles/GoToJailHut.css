@@ -1,0 +1,14 @@
+.GoToJailHut {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.GoToJailHut span {
+    display: flex;
+    justify-content: center;
+    transform: rotate(45deg);
+    text-align: center;
+}

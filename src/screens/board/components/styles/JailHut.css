@@ -1,0 +1,14 @@
+.JailHut {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.JailHut span {
+    width: 1.5em;
+    display: flex;
+    justify-content: center;
+    transform: rotate(45deg);
+}

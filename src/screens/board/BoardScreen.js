@@ -8,12 +8,12 @@ import ChestHut from './components/ChestHut';
 import RailroadHut from './components/RailroadHut';
 import ChanceHut from './components/ChanceHut';
 import CompanyHut from './components/CompanyHut';
+import JailHut from './components/JailHut';
+import FreeParkingHut from './components/FreeParkingHut';
+import GoToJailHut from './components/GoToJailHut';
 
 function BoardScreen() {
     function renderTile(tile, index) {
-        const r = Math.floor(Math.random() * 256);
-        const g = Math.floor(Math.random() * 256);
-        const b = Math.floor(Math.random() * 256);
         const Hut = MAP[tile.type];
         const side = getSide(index);
         const classes = ['tile', tile.id, side];
@@ -23,7 +23,6 @@ function BoardScreen() {
                 key={tile.id}
                 style={{
                     gridArea: tile.id,
-                    backgroundColor: `rgb(${r},${g},${b})`,
                 }}
             >
                 {Hut && <Hut tile={tile} side={side} />}
@@ -45,12 +44,15 @@ export default BoardScreen;
 
 const MAP = {
     go: GoHut,
+    jail: JailHut,
+    freeparking: FreeParkingHut,
+    gotojail: GoToJailHut,
     property: PropertyHut,
-    chest: ChestHut,
-    tax: TaxHut,
     railroad: RailroadHut,
-    chance: ChanceHut,
     company: CompanyHut,
+    chest: ChestHut,
+    chance: ChanceHut,
+    tax: TaxHut,
 };
 
 function getSide(index) {
