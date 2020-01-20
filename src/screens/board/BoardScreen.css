@@ -1,0 +1,88 @@
+.BoardScreen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.BoardScreen .Board {
+    width: min(100vh, 100vw);
+    height: min(100vh, 100vw);
+    display: grid;
+    grid-template-rows: 2fr repeat(9, 1fr) 2fr;
+    grid-template-columns: 2fr repeat(9, 1fr) 2fr;
+    grid-template-areas:
+        'freeparking w5-1 chance2 w5-2 w5-3 railroad3 w6-1 w6-2 company2 w6-3 gotojail'
+        'w4-3 center center center center center center center center center w7-1'
+        'w4-2 center center center center center center center center center w7-2'
+        'communitychest2 center center center center center center center center center communitychest3'
+        'w4-1 center center center center center center center center center w7-3'
+        'railroad2 center center center center center center center center center railroad4'
+        'w3-3 center center center center center center center center center chance3'
+        'w3-2 center center center center center center center center center w8-1'
+        'company1 center center center center center center center center center tax2'
+        'w3-1 center center center center center center center center center w8-2'
+        'jail w2-3 w2-2 chance1 w2-1 railroad1 tax1 w1-2 communitychest1 w1-1 go';
+}
+
+.center {
+    grid-area: center;
+    background-color: aqua;
+}
+
+.tile {
+    overflow: hidden;
+}
+
+.PropertyHut > p {
+    align-self: center;
+}
+
+.PropertyHut {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.PropertyHut > .group {
+    flex-grow: 1;
+}
+.PropertyHut > span {
+    flex-grow: 2;
+}
+
+.tile.left .PropertyHut {
+    flex-direction: row-reverse;
+}
+
+.tile.left p {
+    transform: rotate(90deg);
+    margin-left: -5%;
+}
+
+.tile.top .PropertyHut {
+    flex-direction: column-reverse;
+}
+
+.tile.right .PropertyHut {
+    flex-direction: row;
+}
+
+.tile.right p {
+    transform: rotate(-90deg);
+    margin-right: -5%;
+    text-align: center;
+}
+
+.TaxHut {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+}
+
+.tile.right .TaxHut {
+    padding-left: 10%;
+    flex-direction: row;
+    justify-content: space-between;
+}
