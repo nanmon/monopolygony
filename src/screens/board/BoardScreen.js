@@ -4,6 +4,10 @@ import PropertyHut from './components/PropertyHut';
 import { tiles } from './services/board.json';
 import GoHut from './components/GoHut';
 import TaxHut from './components/TaxHut';
+import ChestHut from './components/ChestHut';
+import RailroadHut from './components/RailroadHut';
+import ChanceHut from './components/ChanceHut';
+import CompanyHut from './components/CompanyHut';
 
 function BoardScreen() {
     function renderTile(tile, index) {
@@ -42,7 +46,11 @@ export default BoardScreen;
 const MAP = {
     go: GoHut,
     property: PropertyHut,
+    chest: ChestHut,
     tax: TaxHut,
+    railroad: RailroadHut,
+    chance: ChanceHut,
+    company: CompanyHut,
 };
 
 function getSide(index) {

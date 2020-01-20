@@ -1,5 +1,6 @@
 import React from 'react';
 import { properties } from '../services/board.json';
+import './styles/PropertyHut.css';
 
 function PropertyHut({ tile, side }) {
     const property = properties.find(p => p.id === tile.id);
@@ -10,8 +11,7 @@ function PropertyHut({ tile, side }) {
                 className="group"
                 style={{ backgroundColor: property.group }}
             ></div>
-            <span />
-            <p>${property.price}</p>
+            <span>${property.price}</span>
         </div>
     );
 }

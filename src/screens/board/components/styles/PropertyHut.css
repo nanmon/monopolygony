@@ -1,0 +1,42 @@
+.PropertyHut > p {
+    align-self: center;
+}
+
+.PropertyHut {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+.PropertyHut > .group {
+    flex-basis: 30%;
+}
+.PropertyHut > span {
+    align-self: center;
+    text-align: center;
+    width: 1.5em;
+    display: flex;
+    justify-content: center;
+}
+
+.PropertyHut.left {
+    flex-direction: row-reverse;
+}
+
+.PropertyHut.left span {
+    transform: rotate(90deg);
+}
+
+.PropertyHut.top {
+    flex-direction: column-reverse;
+}
+
+.PropertyHut.right {
+    flex-direction: row;
+}
+
+.PropertyHut.right span {
+    transform: rotate(-90deg);
+}

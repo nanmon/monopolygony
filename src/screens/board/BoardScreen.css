@@ -26,63 +26,11 @@
         'jail w2-3 w2-2 chance1 w2-1 railroad1 tax1 w1-2 communitychest1 w1-1 go';
 }
 
-.center {
+.BoardScreen .center {
     grid-area: center;
     background-color: aqua;
 }
 
-.tile {
+.BoardScreen .tile {
     overflow: hidden;
-}
-
-.PropertyHut > p {
-    align-self: center;
-}
-
-.PropertyHut {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.PropertyHut > .group {
-    flex-grow: 1;
-}
-.PropertyHut > span {
-    flex-grow: 2;
-}
-
-.tile.left .PropertyHut {
-    flex-direction: row-reverse;
-}
-
-.tile.left p {
-    transform: rotate(90deg);
-    margin-left: -5%;
-}
-
-.tile.top .PropertyHut {
-    flex-direction: column-reverse;
-}
-
-.tile.right .PropertyHut {
-    flex-direction: row;
-}
-
-.tile.right p {
-    transform: rotate(-90deg);
-    margin-right: -5%;
-    text-align: center;
-}
-
-.TaxHut {
-    display: flex;
-    flex-direction: column;
-    /* justify-content: space-between; */
-}
-
-.tile.right .TaxHut {
-    padding-left: 10%;
-    flex-direction: row;
-    justify-content: space-between;
 }

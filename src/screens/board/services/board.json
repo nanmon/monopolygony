@@ -487,7 +487,7 @@
             "averageProbability": 2.5545999999999998
         },
         {
-            "name": "Electric Company",
+            "name": "Electric",
             "id": "company1",
             "posistion": 13,
             "price": 150,
@@ -504,7 +504,7 @@
             "averageProbability": 2.609
         },
         {
-            "name": "Water Works",
+            "name": "Water",
             "id": "company2",
             "posistion": 29,
             "price": 150,
