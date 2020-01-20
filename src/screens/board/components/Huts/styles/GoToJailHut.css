@@ -1,21 +1,15 @@
-.ChestHut {
+.GoToJailHut {
     display: flex;
+    position: relative;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
 }
 
-.ChestHut span {
-    width: 1.5em;
+.GoToJailHut span {
     display: flex;
     justify-content: center;
-}
-
-.ChestHut.left span {
-    transform: rotate(90deg);
-}
-
-.ChestHut.right span {
-    transform: rotate(-90deg);
+    transform: rotate(45deg);
+    text-align: center;
 }

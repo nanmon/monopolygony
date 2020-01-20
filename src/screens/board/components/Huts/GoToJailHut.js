@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles/GoToJailHut.css';
 
-function GoToJailHut() {
+function GoToJailHut({ children }) {
     return (
         <div className="GoToJailHut">
             <span>
@@ -9,6 +9,7 @@ function GoToJailHut() {
                 <br />
                 Jail
             </span>
+            <div className="Tokens">{children}</div>
         </div>
     );
 }

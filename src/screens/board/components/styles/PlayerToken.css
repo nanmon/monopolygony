@@ -1,0 +1,6 @@
+.PlayerToken {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: 2px solid white;
+}

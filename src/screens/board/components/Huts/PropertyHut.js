@@ -1,8 +1,8 @@
 import React from 'react';
-import { properties } from '../services/board.json';
+import { properties } from '../../services/board.json';
 import './styles/PropertyHut.css';
 
-function PropertyHut({ tile, side }) {
+function PropertyHut({ tile, side, children }) {
     const property = properties.find(p => p.id === tile.id);
     const classes = ['PropertyHut', side];
     return (
@@ -12,6 +12,7 @@ function PropertyHut({ tile, side }) {
                 style={{ backgroundColor: property.group }}
             ></div>
             <span>${property.price}</span>
+            <div className="Tokens">{children}</div>
         </div>
     );
 }

@@ -1,5 +1,6 @@
-.CompanyHut {
+.RailroadHut {
     display: flex;
+    position: relative;
     width: 100%;
     height: 100%;
     flex-direction: column;
@@ -7,28 +8,28 @@
     align-items: center;
 }
 
-.CompanyHut span {
+.RailroadHut span {
     width: 1.5em;
     display: flex;
     justify-content: center;
 }
 
-.CompanyHut.top {
+.RailroadHut.top {
     flex-direction: column-reverse;
 }
 
-.CompanyHut.left {
+.RailroadHut.left {
     flex-direction: row-reverse;
 }
 
-.CompanyHut.left span {
+.RailroadHut.left span {
     transform: rotate(90deg);
 }
 
-.CompanyHut.right {
+.RailroadHut.right {
     flex-direction: row;
 }
 
-.CompanyHut.right span {
+.RailroadHut.right span {
     transform: rotate(-90deg);
 }
