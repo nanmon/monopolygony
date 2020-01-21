@@ -35,9 +35,14 @@ function BoardScreen() {
                     tile={tile}
                     side={side}
                     owner={owned && state.players[owned.ownedBy]}
+                    onClick={() => dispatch({ type: 'select', tile })}
                 >
                     {tokens.map(player => (
-                        <PlayerToken key={player.color} player={player} />
+                        <PlayerToken
+                            key={player.color}
+                            player={player}
+                            onClick={() => dispatch({ type: 'select', player })}
+                        />
                     ))}
                 </Hut>
             </div>
@@ -136,7 +141,7 @@ function init() {
 }
 
 function reducer(state, action) {
-    let newState = state;
+    let newState = { ...state };
     switch (action.type) {
         case 'roll': {
             newState = advance(newState);
@@ -156,9 +161,17 @@ function reducer(state, action) {
             break;
         }
         case 'pass': {
-            newState = { ...state };
             newState.turn = (state.turn + 1) % state.players.length;
             newState.phase = 'advance';
+            break;
+        }
+        case 'select': {
+            if (action.player) {
+                const index = state.players.indexOf(action.player);
+                newState.selected = { type: 'player', index };
+            } else {
+                newState.selected = { type: 'property', tile: action.tile };
+            }
             break;
         }
         default:

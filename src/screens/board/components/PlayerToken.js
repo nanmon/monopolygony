@@ -1,15 +1,16 @@
 import React from 'react';
 import './styles/PlayerToken.css';
 
-function PlayerToken({ player }) {
+function PlayerToken({ player, onClick }) {
     return (
-        <div
+        <button
             className="PlayerToken"
             style={{
                 backgroundColor: player.color,
                 borderColor: player.color === 'yellow' ? 'black' : 'white',
             }}
-        ></div>
+            onClick={onClick}
+        ></button>
     );
 }
 
