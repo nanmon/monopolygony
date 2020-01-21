@@ -1,6 +1,7 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import firebase from 'firebase/app';
+import './App.scss';
+import BoardScreen from './screens/board/BoardScreen';
 
 function App() {
   return (
