@@ -4,6 +4,7 @@ import {
     getOwner,
     getBlockOwner,
     getRailroadsOwned,
+    isMiscTile,
 } from './util.js';
 
 export function reducer(state, action) {
@@ -38,8 +39,7 @@ function nextReducer(state, action) {
         }
         case 'end': {
             newState = endReducer(newState, action);
-            newState.turn = (state.turn + 1) % state.players.length;
-            newState.phase = 'roll';
+            newState = nextTurn(newState);
             break;
         }
         default:
@@ -54,7 +54,11 @@ function endReducer(state, action) {
     const landedOn = tiles[player.position];
     const owner = getOwner(state, landedOn.id);
     // buyable
-    if (isBuyable(state, landedOn.id)) {
+    if (isMiscTile(state)) {
+        console.log('misc');
+        newState = applyMisc(state);
+    } else if (isBuyable(state, landedOn.id)) {
+        console.log(action);
         // decided to buy
         if (action.buy) {
             newState = tryBuy(state);
@@ -75,7 +79,12 @@ function advance(state) {
     const dice2 = Math.ceil(Math.random() * 6);
     newState.lastDices = [dice1, dice2];
     const player = { ...state.players[state.turn] };
+    const oldPosition = player.position;
     player.position = (player.position + dice1 + dice2) % 40;
+    if (player.position < oldPosition) {
+        // passed GO
+        player.money += 200;
+    }
     newState.players = [...state.players];
     newState.players[state.turn] = player;
     return newState;
@@ -140,5 +149,46 @@ function tryBuy(state) {
         mortgaged: false,
     });
     newState.players[state.turn] = player;
+    return newState;
+}
+
+function applyMisc(state) {
+    const newState = { ...state };
+    newState.players = [...state.players];
+    const player = { ...state.players[state.turn] };
+    const tile = tiles[player.position];
+    switch (tile.id) {
+        case 'tax1':
+            player.money -= 200;
+            break;
+        case 'tax2':
+            player.money -= 100;
+            break;
+        case 'gotojail':
+            player.position = 10;
+            player.frozenTurns = 3;
+            break;
+        default:
+            return newState;
+        // throw new Error('invalid tile id');
+    }
+    newState.players[state.turn] = player;
+    return newState;
+}
+
+function nextTurn(state) {
+    const newState = { ...state };
+    newState.turn = (state.turn + 1) % state.players.length;
+    newState.phase = 'roll';
+    const nextPlayer = { ...state.players[newState.turn] };
+    if (!nextPlayer.frozenTurns || nextPlayer.frozenTurns <= 0) return newState;
+    nextPlayer.frozenTurns--;
+    if (nextPlayer.frozenTurns === 0) {
+        nextPlayer.money -= 50;
+    } else {
+        newState.phase = 'end';
+    }
+    newState.players = [...state.players];
+    newState.players[newState.turn] = nextPlayer;
     return newState;
 }

@@ -11,6 +11,10 @@ export function isBuyable(state, id = getCurrentTileId(state)) {
     if (property && property.price) return true;
 }
 
+export function isMiscTile(state, id = getCurrentTileId(state)) {
+    return properties.find(p => p.id === id) == null;
+}
+
 export function getCurrentTileId(state) {
     const player = state.players[state.turn];
     const tile = tiles[player.position];
