@@ -1,6 +1,6 @@
 import React from 'react';
 import './BoardScreen.css';
-import { tiles, properties } from './services/board.json';
+import { tiles } from './services/board.json';
 import PropertyHut from './components/Huts/PropertyHut';
 import GoHut from './components/Huts/GoHut';
 import TaxHut from './components/Huts/TaxHut';
@@ -13,6 +13,8 @@ import FreeParkingHut from './components/Huts/FreeParkingHut';
 import GoToJailHut from './components/Huts/GoToJailHut';
 import PlayerToken from './components/PlayerToken';
 import BoardInfo from './components/BoardInfo';
+import { reducer } from './services/reducer';
+import BoardCenter from './components/BoardCenter';
 
 function BoardScreen() {
     const [state, dispatch] = React.useReducer(reducer, null, init);
@@ -49,48 +51,13 @@ function BoardScreen() {
         );
     }
 
-    const currentPlayer = state.players[state.turn];
     return (
         <div className="BoardScreen">
             <div className="Board">
-                <div className="center">
-                    {state.phase === 'advance' && (
-                        <button onClick={() => dispatch({ type: 'roll' })}>
-                            Roll dices
-                        </button>
-                    )}
-                    {state.phase === 'pay' && (
-                        <>
-                            {ownership(state) ? (
-                                <button
-                                    onClick={() =>
-                                        dispatch({ type: 'pay-rent' })
-                                    }
-                                >
-                                    Pay rent
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => dispatch({ type: 'pass' })}
-                                >
-                                    Continue
-                                </button>
-                            )}
-                            {buyable(state) && (
-                                <button
-                                    onClick={() => dispatch({ type: 'buy' })}
-                                >
-                                    Buy property
-                                </button>
-                            )}
-                        </>
-                    )}
-                    <div className="turn">
-                        <span>Turn:</span>
-                        <PlayerToken player={currentPlayer} />
-                    </div>
-                    <span>${currentPlayer.money}</span>
-                </div>
+                <BoardCenter
+                    state={state}
+                    onNext={args => dispatch({ ...args, type: 'next' })}
+                />
                 {tiles.map(renderTile)}
             </div>
             <BoardInfo state={state} />
@@ -131,115 +98,13 @@ function init() {
             // }
         ],
         turn: 0,
-        phase: 'advance',
+        phase: 'roll',
         lastDices: [0, 0],
         selected: {
             type: 'player',
             index: 0,
         },
     };
-}
-
-function reducer(state, action) {
-    let newState = { ...state };
-    switch (action.type) {
-        case 'roll': {
-            newState = advance(newState);
-            newState.phase = 'pay';
-            break;
-        }
-        case 'pay-rent': {
-            newState = payRent(newState);
-            newState.turn = (state.turn + 1) % state.players.length;
-            newState.phase = 'advance';
-            break;
-        }
-        case 'buy': {
-            newState = tryBuy(newState);
-            newState.turn = (state.turn + 1) % state.players.length;
-            newState.phase = 'advance';
-            break;
-        }
-        case 'pass': {
-            newState.turn = (state.turn + 1) % state.players.length;
-            newState.phase = 'advance';
-            break;
-        }
-        case 'select': {
-            if (action.player) {
-                const index = state.players.indexOf(action.player);
-                newState.selected = { type: 'player', index };
-            } else {
-                newState.selected = { type: 'property', tile: action.tile };
-            }
-            break;
-        }
-        default:
-            throw new Error('invalid action type');
-    }
-    return newState;
-}
-
-function advance(state) {
-    const newState = { ...state };
-    const dice1 = Math.ceil(Math.random() * 6);
-    const dice2 = Math.ceil(Math.random() * 6);
-    newState.lastDices = [dice1, dice2];
-    const player = { ...state.players[state.turn] };
-    player.position = (player.position + dice1 + dice2) % 40;
-    newState.players = [...state.players];
-    newState.players[state.turn] = player;
-    return newState;
-}
-
-function ownership(state) {
-    const { position } = state.players[state.turn];
-    return state.properties.find(p => p.index === position);
-}
-
-function buyable(state) {
-    if (ownership(state)) return;
-    const player = state.players[state.turn];
-    const tile = tiles[player.position];
-    const property = properties.find(p => p.id === tile.id);
-    if (property && property.price) return property;
-}
-
-function payRent(state) {
-    const newState = { ...state };
-    const landed = ownership(state);
-    const tile = tiles[landed.index];
-    const property = properties.find(p => p.id === tile.id);
-    if (!property || !property.rent) return newState;
-    newState.players = [...state.players];
-    const payingPlayer = { ...state.players[state.turn] };
-    const payedPlayer = { ...state.players[landed.ownedBy] };
-    payingPlayer.money -= property.rent;
-    payedPlayer.money += property.rent;
-    newState.players[state.turn] = payingPlayer;
-    newState.players[landed.ownedBy] = payedPlayer;
-    return newState;
-}
-
-function tryBuy(state) {
-    const newState = { ...state };
-    newState.players = [...state.players];
-    newState.properties = [...state.properties];
-    const player = { ...state.players[state.turn] };
-    const tile = tiles[player.position];
-    const property = properties.find(p => p.id === tile.id);
-    if (!property || !property.price) return newState;
-    if (property.price > player.money) return newState;
-    player.money -= property.price;
-    newState.properties.push({
-        index: player.position,
-        id: property.id,
-        ownedBy: state.turn,
-        houses: 0,
-        mortgaged: false,
-    });
-    newState.players[state.turn] = player;
-    return newState;
 }
 
 function getSide(index) {

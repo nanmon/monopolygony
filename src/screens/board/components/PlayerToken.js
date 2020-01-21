@@ -9,7 +9,10 @@ function PlayerToken({ player, onClick }) {
                 backgroundColor: player.color,
                 borderColor: player.color === 'yellow' ? 'black' : 'white',
             }}
-            onClick={onClick}
+            onClick={e => {
+                e.stopPropagation();
+                if (onClick) onClick();
+            }}
         ></button>
     );
 }
