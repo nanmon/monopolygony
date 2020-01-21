@@ -17,6 +17,12 @@ function BoardCenter({ state, onNext }) {
                 <PlayerToken player={currentPlayer} />
             </div>
             <span>${currentPlayer.money}</span>
+            {state.phase === 'end' && (
+                <div className="dices">
+                    <span>Dices:</span>|{state.lastDices[0]}|
+                    {state.lastDices[1]}|
+                </div>
+            )}
         </div>
     );
 }
