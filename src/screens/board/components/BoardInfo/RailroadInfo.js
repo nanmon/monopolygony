@@ -1,9 +1,13 @@
 import React from 'react';
 import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
-import { getRailroadsOwned } from '../../services/util.js';
+import {
+    getRailroadsOwned,
+    canMortgage,
+    canUnmortgage,
+} from '../../services/util.js';
 
-function RailroadInfo({ state }) {
+function RailroadInfo({ state, onMortgage }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const ownership = state.properties.find(
         p => p.id === state.selected.tile.id,
@@ -31,6 +35,16 @@ function RailroadInfo({ state }) {
                     {i + 1} owned: ${r}
                 </p>
             ))}
+            {canMortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Mortgage for ${property.price * 0.5}
+                </button>
+            )}
+            {canUnmortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Unmortgage for ${Math.ceil(property.price * 0.55)}
+                </button>
+            )}
         </div>
     );
 }

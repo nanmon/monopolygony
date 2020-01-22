@@ -11,7 +11,9 @@ function PropertyHut({ state, tile, side, children, onClick }) {
     let moneyText = '$' + property.price;
     if (ownership) {
         moneyText = 'R$' + property.rent;
-        if (getBlockOwner(state, property.group) === ownership.ownedBy) {
+        if (ownership.mortgaged) {
+            moneyText = 'M';
+        } else if (getBlockOwner(state, property.group) === ownership.ownedBy) {
             if (ownership.houses === 0) moneyText = 'R$' + property.rent * 2;
             else
                 moneyText = 'R$' + property.multpliedrent[ownership.houses - 1];

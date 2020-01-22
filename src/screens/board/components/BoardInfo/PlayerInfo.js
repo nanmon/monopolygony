@@ -13,8 +13,9 @@ function PlayerInfo({ state }) {
         });
     let assets = 0;
     owned.forEach(p => {
-        assets += p.price;
-        assets += p.ownership.houses * p.housecost;
+        if (p.ownership.mortgaged) assets += p.price / 2;
+        else assets += p.price;
+        if (p.housecost) assets += p.ownership.houses * p.housecost;
     });
     return (
         <div className="PlayerInfo">

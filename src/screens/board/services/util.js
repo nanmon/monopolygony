@@ -76,3 +76,16 @@ export function canBuyHouses(state, propertyId) {
     const minHouses = Math.min(...blockHouses);
     return ownership.houses === minHouses;
 }
+
+export function canMortgage(state, propertyId) {
+    const ownership = state.properties.find(p => p.id === propertyId);
+    return ownership && !ownership.mortgaged;
+}
+
+export function canUnmortgage(state, propertyId) {
+    const ownership = state.properties.find(p => p.id === propertyId);
+    if (!ownership || !ownership.mortgaged) return false;
+    const player = state.players[ownership.ownedBy];
+    const property = properties.find(p => p.id === propertyId);
+    return player.money >= property.price * 0.55; // half price + 10%
+}

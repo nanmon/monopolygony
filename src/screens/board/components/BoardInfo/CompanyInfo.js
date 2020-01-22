@@ -1,9 +1,13 @@
 import React from 'react';
 import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
-import { getCompaniesOwned } from '../../services/util.js';
+import {
+    getCompaniesOwned,
+    canMortgage,
+    canUnmortgage,
+} from '../../services/util.js';
 
-function CompanyInfo({ state }) {
+function CompanyInfo({ state, onMortgage }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const rent = property.multpliedrent;
     const ownership = state.properties.find(
@@ -28,6 +32,16 @@ function CompanyInfo({ state }) {
             <p style={{ fontWeight: rentLvl === 2 ? 'bold' : 'normal' }}>
                 Dice x {rent[1]} if owning the two utilities
             </p>
+            {canMortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Mortgage for ${property.price * 0.5}
+                </button>
+            )}
+            {canUnmortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Unmortgage for ${Math.ceil(property.price * 0.55)}
+                </button>
+            )}
         </div>
     );
 }

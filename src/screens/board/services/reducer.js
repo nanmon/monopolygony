@@ -7,6 +7,8 @@ import {
     isMiscTile,
     getCompaniesOwned,
     canBuyHouses,
+    canMortgage,
+    canUnmortgage,
 } from './util.js';
 
 export function reducer(state, action) {
@@ -27,6 +29,10 @@ export function reducer(state, action) {
         }
         case 'buy-house': {
             newState = buyHouse(newState);
+            break;
+        }
+        case 'mortgage': {
+            newState = mortgage(newState);
             break;
         }
         default:
@@ -216,4 +222,37 @@ function buyHouse(state) {
     newState.players = [...state.players];
     newState.players[ownership.ownedBy] = owner;
     return newState;
+}
+
+function mortgage(state) {
+    const ownershipIndex = state.properties.findIndex(
+        p => state.selected.tile.id === p.id,
+    );
+    const ownership = { ...state.properties[ownershipIndex] };
+    if (!ownership) return state;
+    if (ownership.mortgaged) {
+        if (!canUnmortgage(state, ownership.id)) return state;
+        const newState = { ...state };
+        ownership.mortgaged = false;
+        newState.properties = [...state.properties];
+        newState.properties[ownershipIndex] = ownership;
+        const property = properties.find(p => p.id === ownership.id);
+        const player = { ...state.players[ownership.ownedBy] };
+        player.money -= Math.ceil(property.price * 0.55); // half price + 10%
+        newState.players = [...state.players];
+        newState.players[ownership.ownedBy] = player;
+        return newState;
+    } else {
+        if (!canMortgage(state, ownership.id)) return state;
+        const newState = { ...state };
+        ownership.mortgaged = true;
+        newState.properties = [...state.properties];
+        newState.properties[ownershipIndex] = ownership;
+        const property = properties.find(p => p.id === ownership.id);
+        const player = { ...state.players[ownership.ownedBy] };
+        player.money += property.price * 0.5;
+        newState.players = [...state.players];
+        newState.players[ownership.ownedBy] = player;
+        return newState;
+    }
 }

@@ -1,9 +1,14 @@
 import React from 'react';
 import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
-import { getBlockOwner, canBuyHouses } from '../../services/util.js';
+import {
+    getBlockOwner,
+    canBuyHouses,
+    canMortgage,
+    canUnmortgage,
+} from '../../services/util.js';
 
-function PropertyInfo({ state, onBuyHouse }) {
+function PropertyInfo({ state, onBuyHouse, onMortgage }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const ownership = state.properties.find(
         p => p.id === state.selected.tile.id,
@@ -49,6 +54,16 @@ function PropertyInfo({ state, onBuyHouse }) {
             <p>${property.housecost} per house or hotel</p>
             {canBuyHouses(state, property.id) && (
                 <button onClick={onBuyHouse}>Buy house or hotel</button>
+            )}
+            {canMortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Mortgage for ${property.price * 0.5}
+                </button>
+            )}
+            {canUnmortgage(state, property.id) && (
+                <button onClick={onMortgage}>
+                    Unmortgage for ${Math.ceil(property.price * 0.55)}
+                </button>
             )}
         </div>
     );
