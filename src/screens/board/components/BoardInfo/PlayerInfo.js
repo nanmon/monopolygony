@@ -7,12 +7,15 @@ function PlayerInfo({ state }) {
     const player = state.players[playerIndex];
     const owned = state.properties
         .filter(p => p.ownedBy === playerIndex)
-        .map(p => {
-            const property = properties.find(pp => p.id === pp.id);
-            return property;
+        .map(ownership => {
+            const property = properties.find(pp => ownership.id === pp.id);
+            return { ...property, ownership };
         });
     let assets = 0;
-    owned.forEach(p => (assets += p.price));
+    owned.forEach(p => {
+        assets += p.price;
+        assets += p.ownership.houses * p.housecost;
+    });
     return (
         <div className="PlayerInfo">
             <p>Player</p>

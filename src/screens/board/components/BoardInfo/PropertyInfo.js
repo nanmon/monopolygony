@@ -46,6 +46,7 @@ function PropertyInfo({ state, onBuyHouse }) {
             <p style={{ fontWeight: rentLvl === 7 ? 'bold' : 'normal' }}>
                 With hotel: ${property.multpliedrent[4]}
             </p>
+            <p>${property.housecost} per house or hotel</p>
             {canBuyHouses(state, property.id) && (
                 <button onClick={onBuyHouse}>Buy house or hotel</button>
             )}

@@ -87,10 +87,10 @@ const MAP = {
 function init() {
     return {
         players: [
-            { position: 0, money: 1500, color: 'red' },
-            { position: 0, money: 1500, color: 'blue' },
-            { position: 0, money: 1500, color: 'green' },
-            { position: 0, money: 1500, color: 'gold' },
+            { position: 0, money: 1500, color: 'red', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'blue', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'green', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'gold', frozenTurns: -1 },
         ],
         properties: [
             // {
@@ -100,6 +100,10 @@ function init() {
             //     houses: 0, // 0 - 5
             //     mortgaged: false
             // }
+        ],
+        trade: [
+            // { type: 'property', id: id },
+            // { type: 'money', player: number, amount: number }
         ],
         turn: 0,
         phase: 'roll',
