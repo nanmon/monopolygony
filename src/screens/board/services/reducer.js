@@ -5,6 +5,7 @@ import {
     getBlockOwner,
     getRailroadsOwned,
     isMiscTile,
+    getCompaniesOwned,
 } from './util.js';
 
 export function reducer(state, action) {
@@ -114,7 +115,7 @@ function payRent(state) {
             break;
         }
         case 'company': {
-            const count = getRailroadsOwned(state, ownership.ownedBy);
+            const count = getCompaniesOwned(state, ownership.ownedBy);
             const multiplier = property.multpliedrent[count - 1];
             rent = (state.lastDices[0] + state.lastDices[1]) * multiplier;
             break;

@@ -34,6 +34,7 @@ function BoardScreen() {
                 }}
             >
                 <Hut
+                    state={state}
                     tile={tile}
                     side={side}
                     owner={owned && state.players[owned.ownedBy]}

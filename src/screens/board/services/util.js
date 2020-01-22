@@ -34,7 +34,7 @@ export function getBlockOwner(state, block) {
     const firstPropOwner = blockProps[0].ownership.ownedBy;
     if (blockProps.every(p => p.ownership.ownedBy === firstPropOwner))
         return firstPropOwner;
-    return firstPropOwner;
+    return -1;
 }
 
 export function getRailroadsOwned(state, playerIndex) {

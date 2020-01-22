@@ -1,10 +1,20 @@
 import React from 'react';
 import { properties } from '../../services/board.json';
 import './styles/PropertyHut.css';
+import { getBlockOwner } from '../../services/util.js';
 
-function PropertyHut({ tile, side, owner, children, onClick }) {
+function PropertyHut({ state, tile, side, children, onClick }) {
     const property = properties.find(p => p.id === tile.id);
     const classes = ['PropertyHut', side];
+    const ownership = state.properties.find(p => p.id === tile.id);
+    const owner = ownership && state.players[ownership.ownedBy];
+    let moneyText = '$' + property.price;
+    if (ownership) {
+        moneyText = 'R$' + property.rent;
+        if (getBlockOwner(state, property.group) === ownership.ownedBy) {
+            moneyText = 'R$' + property.rent * 2;
+        }
+    }
     return (
         <div
             className={classes.join(' ')}
@@ -18,7 +28,7 @@ function PropertyHut({ tile, side, owner, children, onClick }) {
                 className="group"
                 style={{ backgroundColor: property.group }}
             ></div>
-            <span>${property.price}</span>
+            <span>{moneyText}</span>
             <div className="Tokens">{children}</div>
             {owner && (
                 <div

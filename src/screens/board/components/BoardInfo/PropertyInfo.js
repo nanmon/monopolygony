@@ -1,20 +1,20 @@
 import React from 'react';
 import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
+import { getBlockOwner } from '../../services/util.js';
 
 function PropertyInfo({ state }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
-    const owned = state.properties.find(p => p.id === state.selected.tile.id);
-    const ownedBy = owned && state.players[owned.ownedBy];
-    let rentLvl = owned ? 1 : 0;
-    const block = properties.filter(p => p.group === property.group);
-    const hasWholeBlock =
-        owned &&
-        block.every(p => {
-            const pwnd = state.properties.find(pw => p.id === pw.id);
-            return pwnd && pwnd.ownedBy === owned.ownedBy;
-        });
-    if (hasWholeBlock) rentLvl++;
+    const ownership = state.properties.find(
+        p => p.id === state.selected.tile.id,
+    );
+    const ownedBy = ownership && state.players[ownership.ownedBy];
+    let rentLvl = 0;
+    if (ownership) {
+        rentLvl = 1;
+        if (getBlockOwner(state, property.group) === ownership.ownedBy)
+            rentLvl++;
+    }
     return (
         <div className="PropertyInfo">
             <p>Property</p>
