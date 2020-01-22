@@ -81,10 +81,14 @@ function endReducer(state, action) {
 
 function advance(state) {
     const newState = { ...state };
+    const player = { ...state.players[state.turn] };
+    if (player.frozenTurns === 0) {
+        player.money -= 50;
+        player.frozenTurns--;
+    }
     const dice1 = Math.ceil(Math.random() * 6);
     const dice2 = Math.ceil(Math.random() * 6);
     newState.lastDices = [dice1, dice2];
-    const player = { ...state.players[state.turn] };
     const oldPosition = player.position;
     player.position = (player.position + dice1 + dice2) % 40;
     if (player.position < oldPosition) {
@@ -189,11 +193,7 @@ function nextTurn(state) {
     const nextPlayer = { ...state.players[newState.turn] };
     if (!nextPlayer.frozenTurns || nextPlayer.frozenTurns <= 0) return newState;
     nextPlayer.frozenTurns--;
-    if (nextPlayer.frozenTurns === 0) {
-        nextPlayer.money -= 50;
-    } else {
-        newState.phase = 'end';
-    }
+    newState.phase = 'end';
     newState.players = [...state.players];
     newState.players[newState.turn] = nextPlayer;
     return newState;

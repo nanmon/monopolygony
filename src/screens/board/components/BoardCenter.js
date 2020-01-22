@@ -1,5 +1,6 @@
 import React from 'react';
 import { getOwner, isBuyable } from '../services/util';
+import { tiles } from '../services/board.json';
 import PlayerToken from './PlayerToken';
 
 function BoardCenter({ state, onNext }) {
@@ -30,10 +31,17 @@ function BoardCenter({ state, onNext }) {
 export default BoardCenter;
 
 function getNextText(state) {
-    if (state.phase === 'roll') return 'Roll dices';
-    else if (state.phase === 'end') {
+    const player = state.players[state.turn];
+    const tile = tiles[player.position];
+    if (state.phase === 'roll') {
+        if (player.frozenTurns === 0) return 'Pay $50 fine and roll dices';
+        return 'Roll dices';
+    } else if (state.phase === 'end') {
         const owner = getOwner(state);
         if (owner !== -1 && owner !== state.turn) return 'Pay rent';
-        else return 'Continue';
+        if (player.frozenTurns >= 0) return 'Stay in jail';
+        if (tile.type === 'gotojail') return 'Go to jail';
+        if (tile.type === 'tax') return 'Pay tax';
+        return 'Continue';
     }
 }
