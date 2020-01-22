@@ -61,7 +61,10 @@ function BoardScreen() {
                 />
                 {tiles.map(renderTile)}
             </div>
-            <BoardInfo state={state} />
+            <BoardInfo
+                state={state}
+                onBuyHouse={() => dispatch({ type: 'buy-house' })}
+            />
         </div>
     );
 }

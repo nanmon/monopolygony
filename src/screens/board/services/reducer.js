@@ -6,6 +6,7 @@ import {
     getRailroadsOwned,
     isMiscTile,
     getCompaniesOwned,
+    canBuyHouses,
 } from './util.js';
 
 export function reducer(state, action) {
@@ -22,6 +23,10 @@ export function reducer(state, action) {
             } else {
                 newState.selected = { type: 'property', tile: action.tile };
             }
+            break;
+        }
+        case 'buy-house': {
+            newState = buyHouse(newState);
             break;
         }
         default:
@@ -191,5 +196,24 @@ function nextTurn(state) {
     }
     newState.players = [...state.players];
     newState.players[newState.turn] = nextPlayer;
+    return newState;
+}
+
+function buyHouse(state) {
+    const propertyId = state.selected.tile.id;
+    if (!canBuyHouses(state, propertyId)) return state;
+    const ownershipIndex = state.properties.findIndex(p => p.id === propertyId);
+    const ownership = state.properties[ownershipIndex];
+    const newState = { ...state };
+    newState.properties = [...state.properties];
+    newState.properties[ownershipIndex] = {
+        ...ownership,
+        houses: ownership.houses + 1,
+    };
+    const owner = { ...state.players[ownership.ownedBy] };
+    const property = properties.find(p => p.id === propertyId);
+    owner.money -= property.housecost;
+    newState.players = [...state.players];
+    newState.players[ownership.ownedBy] = owner;
     return newState;
 }

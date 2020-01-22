@@ -12,7 +12,9 @@ function PropertyHut({ state, tile, side, children, onClick }) {
     if (ownership) {
         moneyText = 'R$' + property.rent;
         if (getBlockOwner(state, property.group) === ownership.ownedBy) {
-            moneyText = 'R$' + property.rent * 2;
+            if (ownership.houses === 0) moneyText = 'R$' + property.rent * 2;
+            else
+                moneyText = 'R$' + property.multpliedrent[ownership.houses - 1];
         }
     }
     return (

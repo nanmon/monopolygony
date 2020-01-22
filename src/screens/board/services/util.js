@@ -58,3 +58,21 @@ export function getCompaniesOwned(state, playerIndex) {
         );
     }).length;
 }
+
+export function canBuyHouses(state, propertyId) {
+    const tile = tiles.find(t => t.id === propertyId);
+    if (tile.type !== 'property') return false;
+    const property = properties.find(p => p.id === propertyId);
+    if (getBlockOwner(state, property.group) === -1) return false;
+    const ownership = state.properties.find(p => p.id === propertyId);
+    if (ownership.houses === 5) return false;
+    const owner = state.players[ownership.ownedBy];
+    if (owner.money < property.housecost) return false;
+    const block = properties.filter(p => p.group === property.group);
+    const blockHouses = block.map(p => {
+        const own = state.properties.find(op => op.id === p.id);
+        return own ? own.houses : -1;
+    });
+    const minHouses = Math.min(...blockHouses);
+    return ownership.houses === minHouses;
+}
