@@ -6,9 +6,10 @@ import {
     canBuyHouses,
     canMortgage,
     canUnmortgage,
+    canSellHouses,
 } from '../../services/util.js';
 
-function PropertyInfo({ state, onBuyHouse, onMortgage }) {
+function PropertyInfo({ state, onBuyHouse, onSellHouse, onMortgage }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const ownership = state.properties.find(
         p => p.id === state.selected.tile.id,
@@ -54,6 +55,11 @@ function PropertyInfo({ state, onBuyHouse, onMortgage }) {
             <p>${property.housecost} per house or hotel</p>
             {canBuyHouses(state, property.id) && (
                 <button onClick={onBuyHouse}>Buy house or hotel</button>
+            )}
+            {canSellHouses(state, property.id) && (
+                <button onClick={onSellHouse}>
+                    Sell house or hotel for ${property.housecost / 2}
+                </button>
             )}
             {canMortgage(state, property.id) && (
                 <button onClick={onMortgage}>

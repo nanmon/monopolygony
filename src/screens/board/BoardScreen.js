@@ -64,6 +64,7 @@ function BoardScreen() {
             <BoardInfo
                 state={state}
                 onBuyHouse={() => dispatch({ type: 'buy-house' })}
+                onSellHouse={() => dispatch({ type: 'sell-house' })}
                 onMortgage={() => dispatch({ type: 'mortgage' })}
             />
         </div>

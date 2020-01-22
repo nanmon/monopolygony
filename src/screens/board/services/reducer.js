@@ -9,6 +9,7 @@ import {
     canBuyHouses,
     canMortgage,
     canUnmortgage,
+    canSellHouses,
 } from './util.js';
 
 export function reducer(state, action) {
@@ -29,6 +30,10 @@ export function reducer(state, action) {
         }
         case 'buy-house': {
             newState = buyHouse(newState);
+            break;
+        }
+        case 'sell-house': {
+            newState = sellHouse(newState);
             break;
         }
         case 'mortgage': {
@@ -219,6 +224,25 @@ function buyHouse(state) {
     const owner = { ...state.players[ownership.ownedBy] };
     const property = properties.find(p => p.id === propertyId);
     owner.money -= property.housecost;
+    newState.players = [...state.players];
+    newState.players[ownership.ownedBy] = owner;
+    return newState;
+}
+
+function sellHouse(state) {
+    const propertyId = state.selected.tile.id;
+    if (!canSellHouses(state, propertyId)) return state;
+    const ownershipIndex = state.properties.findIndex(p => p.id === propertyId);
+    const ownership = state.properties[ownershipIndex];
+    const newState = { ...state };
+    newState.properties = [...state.properties];
+    newState.properties[ownershipIndex] = {
+        ...ownership,
+        houses: ownership.houses - 1,
+    };
+    const owner = { ...state.players[ownership.ownedBy] };
+    const property = properties.find(p => p.id === propertyId);
+    owner.money += property.housecost / 2;
     newState.players = [...state.players];
     newState.players[ownership.ownedBy] = owner;
     return newState;

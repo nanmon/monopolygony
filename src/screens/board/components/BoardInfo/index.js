@@ -4,7 +4,7 @@ import PropertyInfo from './PropertyInfo.js';
 import RailroadInfo from './RailroadInfo.js';
 import CompanyInfo from './CompanyInfo';
 
-function BoardInfo({ state, onBuyHouse, onMortgage }) {
+function BoardInfo({ state, onBuyHouse, onSellHouse, onMortgage }) {
     let content = null;
     if (state.selected.type === 'player') {
         content = <PlayerInfo state={state} />;
@@ -14,6 +14,7 @@ function BoardInfo({ state, onBuyHouse, onMortgage }) {
                 <PropertyInfo
                     state={state}
                     onBuyHouse={onBuyHouse}
+                    onSellHouse={onSellHouse}
                     onMortgage={onMortgage}
                 />
             );

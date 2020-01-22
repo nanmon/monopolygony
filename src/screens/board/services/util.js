@@ -77,6 +77,11 @@ export function canBuyHouses(state, propertyId) {
     return ownership.houses === minHouses;
 }
 
+export function canSellHouses(state, propertyId) {
+    const ownership = state.properties.find(p => p.id === propertyId);
+    if (ownership && ownership.houses > 0) return true;
+}
+
 export function canMortgage(state, propertyId) {
     const ownership = state.properties.find(p => p.id === propertyId);
     return ownership && !ownership.mortgaged;
