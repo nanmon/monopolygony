@@ -56,12 +56,21 @@ function nextReducer(state, action) {
         }
         case 'advance': {
             newState = advance(newState);
-            newState.phase = 'end';
+            newState.phase = 'tileEffect';
+            break;
+        }
+        case 'tileEffect': {
+            newState = tileEffect(newState, action);
+            if (newState.phase === 'tileEffect') {
+                // skip end
+                newState = nextTurn(newState);
+                newState.phase = 'roll';
+            }
             break;
         }
         case 'end': {
-            newState = endReducer(newState, action);
             newState = nextTurn(newState);
+            newState.phase = 'roll';
             break;
         }
         default:
@@ -70,26 +79,26 @@ function nextReducer(state, action) {
     return newState;
 }
 
-function endReducer(state, action) {
+function tileEffect(state, action) {
     let newState = { ...state };
     const player = state.players[state.turn];
     const landedOn = tiles[player.position];
     const owner = getOwner(state, landedOn.id);
-    // buyable
     if (isMiscTile(state)) {
-        console.log('misc');
-        newState = applyMisc(state);
+        newState = applyMisc(state); // includes phase change
+        // buyable
     } else if (isBuyable(state, landedOn.id)) {
-        console.log(action);
         // decided to buy
         if (action.buy) {
             newState = tryBuy(state);
+            newState.phase = 'end';
         } // else: pass
         // owned by someone
     } else if (owner !== -1) {
         if (owner !== state.turn) {
             // pay rent
             newState = payRent(state);
+            newState.phase = 'end';
         } // else : pass if owned by current player
     }
     return newState;
@@ -201,19 +210,19 @@ function applyMisc(state) {
         // throw new Error('invalid tile id');
     }
     newState.players[state.turn] = player;
+    newState.phase = 'end';
     return newState;
 }
 
 function nextTurn(state) {
     const newState = { ...state };
     newState.turn = (state.turn + 1) % state.players.length;
-    newState.phase = 'roll';
-    const nextPlayer = { ...state.players[newState.turn] };
-    if (!nextPlayer.frozenTurns || nextPlayer.frozenTurns <= 0) return newState;
-    nextPlayer.frozenTurns--;
-    newState.phase = 'end';
-    newState.players = [...state.players];
-    newState.players[newState.turn] = nextPlayer;
+    // const nextPlayer = { ...state.players[newState.turn] };
+    // if (!nextPlayer.frozenTurns || nextPlayer.frozenTurns <= 0) return newState;
+    // nextPlayer.frozenTurns--;
+    // newState.phase = 'end';
+    // newState.players = [...state.players];
+    // newState.players[newState.turn] = nextPlayer;
     return newState;
 }
 

@@ -8,7 +8,7 @@ function BoardCenter({ state, onNext }) {
     return (
         <div className="BoardCenter center">
             <button onClick={() => onNext()}>{getNextText(state)}</button>
-            {state.phase === 'end' && isBuyable(state) && (
+            {state.phase === 'tileEffect' && isBuyable(state) && (
                 <button onClick={() => onNext({ buy: true })}>
                     Buy property
                 </button>
@@ -36,14 +36,13 @@ function getNextText(state) {
     if (state.phase === 'roll') {
         if (player.frozenTurns === 0) return 'Pay $50 fine and roll dices';
         return 'Roll dices';
-    } else if (state.phase === 'end') {
+    } else if (state.phase === 'tileEffect') {
         const owner = getOwner(state);
         if (owner !== -1 && owner !== state.turn) return 'Pay rent';
         if (player.frozenTurns >= 0) return 'Stay in jail';
         if (tile.type === 'gotojail') return 'Go to jail';
         if (tile.type === 'tax') return 'Pay tax';
         return 'Continue';
-    } else if (state.phase === 'advance') {
-        return 'Continue';
     }
+    return 'Continue';
 }
