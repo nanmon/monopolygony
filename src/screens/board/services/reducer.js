@@ -50,6 +50,11 @@ function nextReducer(state, action) {
     let newState = { ...state };
     switch (state.phase) {
         case 'roll': {
+            newState = roll(newState);
+            newState.phase = 'advance';
+            break;
+        }
+        case 'advance': {
             newState = advance(newState);
             newState.phase = 'end';
             break;
@@ -90,16 +95,18 @@ function endReducer(state, action) {
     return newState;
 }
 
-function advance(state) {
+function roll(state) {
     const newState = { ...state };
-    const player = { ...state.players[state.turn] };
-    if (player.frozenTurns === 0) {
-        player.money -= 50;
-        player.frozenTurns--;
-    }
     const dice1 = Math.ceil(Math.random() * 6);
     const dice2 = Math.ceil(Math.random() * 6);
     newState.lastDices = [dice1, dice2];
+    return newState;
+}
+
+function advance(state) {
+    const newState = { ...state };
+    const player = { ...state.players[state.turn] };
+    const [dice1, dice2] = newState.lastDices;
     const oldPosition = player.position;
     player.position = (player.position + dice1 + dice2) % 40;
     if (player.position < oldPosition) {

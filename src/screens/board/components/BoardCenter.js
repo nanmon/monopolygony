@@ -18,7 +18,7 @@ function BoardCenter({ state, onNext }) {
                 <PlayerToken player={currentPlayer} />
             </div>
             <span>${currentPlayer.money}</span>
-            {state.phase === 'end' && (
+            {state.phase !== 'roll' && (
                 <div className="dices">
                     <span>Dices:</span>|{state.lastDices[0]}|
                     {state.lastDices[1]}|
@@ -42,6 +42,8 @@ function getNextText(state) {
         if (player.frozenTurns >= 0) return 'Stay in jail';
         if (tile.type === 'gotojail') return 'Go to jail';
         if (tile.type === 'tax') return 'Pay tax';
+        return 'Continue';
+    } else if (state.phase === 'advance') {
         return 'Continue';
     }
 }
