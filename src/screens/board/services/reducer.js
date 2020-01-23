@@ -50,7 +50,7 @@ function nextReducer(state, action) {
     let newState = { ...state };
     switch (state.phase) {
         case 'roll': {
-            newState = roll(newState);
+            newState = roll(newState, action);
             newState.phase = 'advance';
             break;
         }
@@ -104,11 +104,9 @@ function tileEffect(state, action) {
     return newState;
 }
 
-function roll(state) {
+function roll(state, action) {
     const newState = { ...state };
-    const dice1 = Math.ceil(Math.random() * 6);
-    const dice2 = Math.ceil(Math.random() * 6);
-    newState.lastDices = [dice1, dice2];
+    newState.lastDices = [action.dice1, action.dice2];
     return newState;
 }
 

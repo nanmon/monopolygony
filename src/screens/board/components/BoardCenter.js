@@ -5,9 +5,18 @@ import PlayerToken from './PlayerToken';
 
 function BoardCenter({ state, onNext }) {
     const currentPlayer = state.players[state.turn];
+    function next() {
+        if (state.phase === 'roll') {
+            const dice1 = Math.ceil(Math.random() * 6);
+            const dice2 = Math.ceil(Math.random() * 6);
+            onNext({ dice1, dice2 });
+        } else {
+            onNext();
+        }
+    }
     return (
         <div className="BoardCenter center">
-            <button onClick={() => onNext()}>{getNextText(state)}</button>
+            <button onClick={next}>{getNextText(state)}</button>
             {state.phase === 'tileEffect' && isBuyable(state) && (
                 <button onClick={() => onNext({ buy: true })}>
                     Buy property
