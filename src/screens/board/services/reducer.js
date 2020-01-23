@@ -35,8 +35,7 @@ function init() {
             // }
         ],
         trade: [
-            // { type: 'property', id: id },
-            // { type: 'money', player: number, amount: number }
+            // { player: number, money: number, properties: id[] },
         ],
         turn: 0,
         phase: 'roll',
@@ -78,6 +77,14 @@ function reducer(state, action) {
         }
         case 'mortgage': {
             newState = mortgage(newState);
+            break;
+        }
+        case 'trade-add':
+        case 'trade-remove':
+        case 'trade-set':
+        case 'trade-cancel':
+        case 'trade-done': {
+            newState = trade(newState, action);
             break;
         }
         default:
@@ -432,5 +439,113 @@ function jailedEnd(state) {
     newState.players = [...state.players];
     newState.players[newState.turn] = player;
     newState.turn = (state.turn + 1) % state.players.length;
+    return newState;
+}
+
+function trade(state, action) {
+    const newState = { ...state };
+    switch (action.type) {
+        case 'trade-add': {
+            const tradeIndex = state.trade.findIndex(
+                t => t.playerIndex === action.playerIndex,
+            );
+            let newTradeObj;
+            newState.trade = [...state.trade];
+            if (tradeIndex === -1) {
+                if (state.trade.length === 2) return state;
+                newTradeObj = {
+                    playerIndex: action.playerIndex,
+                    money: 0,
+                    properties: [action.propertyId],
+                };
+                newState.trade.push(newTradeObj);
+            } else {
+                newTradeObj = { ...state.trade[tradeIndex] };
+                if (newTradeObj.properties.includes(action.propertyId))
+                    return state;
+                newTradeObj.properties = [
+                    ...state.trade[tradeIndex].properties,
+                    action.propertyId,
+                ];
+                newState.trade[tradeIndex] = newTradeObj;
+            }
+            break;
+        }
+        case 'trade-remove': {
+            const tradeIndex = state.trade.findIndex(
+                t => t.playerIndex === action.playerIndex,
+            );
+            if (tradeIndex === -1) return state;
+            const newTradeObj = { ...state.trade[tradeIndex] };
+            newTradeObj.properties = [...state.trade[tradeIndex].properties];
+            const propertyIndex = newTradeObj.properties.findIndex(
+                p => p.id === action.propertyId,
+            );
+            if (propertyIndex === -1) return state;
+            newTradeObj.properties.splice(propertyIndex, 1);
+            newState.trade = [...state.trade];
+            newState.trade[tradeIndex] = newTradeObj;
+            break;
+        }
+        case 'trade-set': {
+            const tradeIndex = state.trade.findIndex(
+                t => t.playerIndex === action.playerIndex,
+            );
+            let newTradeObj;
+            newState.trade = [...state.trade];
+            if (tradeIndex === -1) {
+                if (state.trade.length === 2) return state;
+                newTradeObj = {
+                    playerIndex: action.playerIndex,
+                    money: action.money,
+                    properties: [],
+                };
+                newState.trade.push(newTradeObj);
+            } else {
+                newTradeObj = { ...state.trade[tradeIndex] };
+                newTradeObj.money = action.money;
+                newState.trade[tradeIndex] = newTradeObj;
+            }
+            break;
+        }
+        case 'trade-cancel': {
+            newState.trade = [];
+            break;
+        }
+        case 'trade-done': {
+            const [trade1, trade2] = state.trade;
+            if (!trade1 || !trade2) return state;
+            const player1 = { ...state.players[trade1.playerIndex] };
+            const player2 = { ...state.players[trade2.playerIndex] };
+            player1.money += trade2.money;
+            player1.money -= trade1.money;
+            player2.money += trade1.money;
+            player2.money -= trade2.money;
+            newState.players = [...state.players];
+            newState.players[trade1.playerIndex] = player1;
+            newState.players[trade2.playerIndex] = player2;
+            newState.properties = [...state.properties];
+            trade1.properties.forEach(propId => {
+                const ownershipIndex = newState.properties.findIndex(
+                    p => p.id === propId,
+                );
+                const newOwnership = { ...newState.properties[ownershipIndex] };
+                newOwnership.ownedBy = trade2.playerIndex;
+                newState.properties[ownershipIndex] = newOwnership;
+            });
+            trade2.properties.forEach(propId => {
+                const ownershipIndex = newState.properties.findIndex(
+                    p => p.id === propId,
+                );
+                const newOwnership = { ...newState.properties[ownershipIndex] };
+                newOwnership.ownedBy = trade1.playerIndex;
+                newState.properties[ownershipIndex] = newOwnership;
+            });
+            newState.trade = [];
+            break;
+        }
+        default:
+            throw new Error('invalid trade type');
+    }
     return newState;
 }

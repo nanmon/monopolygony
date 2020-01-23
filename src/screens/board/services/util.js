@@ -94,3 +94,12 @@ export function canUnmortgage(state, propertyId) {
     const property = properties.find(p => p.id === propertyId);
     return player.money >= property.price * 0.55; // half price + 10%
 }
+
+export function canTrade(state, propertyId) {
+    const ownership = state.properties.find(p => p.id === propertyId);
+    if (!ownership) return false;
+    if (state.trade.length < 2) return true;
+    if (state.trade[0].playerIndex === ownership.ownedBy) return true;
+    if (state.trade[1].playerIndex === ownership.ownedBy) return true;
+    return false;
+}

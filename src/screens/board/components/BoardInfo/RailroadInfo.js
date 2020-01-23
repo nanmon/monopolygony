@@ -5,9 +5,10 @@ import {
     getRailroadsOwned,
     canMortgage,
     canUnmortgage,
+    canTrade,
 } from '../../services/util.js';
 
-function RailroadInfo({ state, onMortgage }) {
+function RailroadInfo({ state, onMortgage, onTrade }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const ownership = state.properties.find(
         p => p.id === state.selected.tile.id,
@@ -44,6 +45,9 @@ function RailroadInfo({ state, onMortgage }) {
                 <button onClick={onMortgage}>
                     Unmortgage for ${Math.ceil(property.price * 0.55)}
                 </button>
+            )}
+            {canTrade(state, property.id) && (
+                <button onClick={onTrade}>Trade</button>
             )}
         </div>
     );

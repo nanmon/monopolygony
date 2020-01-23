@@ -16,12 +16,12 @@ function BoardCenter({ state, onNext }) {
     }
     return (
         <div className="BoardCenter center">
-            <button onClick={next}>{getNextText(state)}</button>
             {state.phase === 'tileEffect' && isBuyable(state) && (
                 <button onClick={() => onNext({ buy: true })}>
                     Buy property
                 </button>
             )}
+            <button onClick={next}>{getNextText(state)}</button>
             <div className="turn">
                 <span>Turn:</span>
                 <PlayerToken player={currentPlayer} />

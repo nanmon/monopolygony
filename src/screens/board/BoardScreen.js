@@ -19,6 +19,31 @@ import BoardCenter from './components/BoardCenter';
 function BoardScreen() {
     const [state, dispatch] = useBoardState();
 
+    function onHutClick(tile) {
+        if (state.trade.length > 0) {
+            const ownership = state.properties.find(p => p.id === tile.id);
+            if (!ownership) return;
+            dispatch({
+                type: 'trade-add',
+                propertyId: tile.id,
+                playerIndex: ownership.ownedBy,
+            });
+        } else {
+            dispatch({ type: 'select', tile });
+        }
+    }
+
+    function onPlayerClick(player) {
+        if (state.trade.length === 0) {
+            dispatch({ type: 'select', player });
+        } else if (state.trade.length === 1) {
+            const playerIndex = state.players.findIndex(
+                p => p.color === player.color,
+            );
+            dispatch({ type: 'trade-set', playerIndex, money: 0 });
+        }
+    }
+
     function renderTile(tile, index) {
         const Hut = MAP[tile.type];
         const side = getSide(index);
@@ -38,13 +63,13 @@ function BoardScreen() {
                     tile={tile}
                     side={side}
                     owner={owned && state.players[owned.ownedBy]}
-                    onClick={() => dispatch({ type: 'select', tile })}
+                    onClick={() => onHutClick(tile)}
                 >
                     {tokens.map(player => (
                         <PlayerToken
                             key={player.color}
                             player={player}
-                            onClick={() => dispatch({ type: 'select', player })}
+                            onClick={() => onPlayerClick(player)}
                         />
                     ))}
                 </Hut>
@@ -66,6 +91,10 @@ function BoardScreen() {
                 onBuyHouse={() => dispatch({ type: 'buy-house' })}
                 onSellHouse={() => dispatch({ type: 'sell-house' })}
                 onMortgage={() => dispatch({ type: 'mortgage' })}
+                onTrade={args => dispatch({ ...args, type: 'trade-add' })}
+                onMoneyTrade={args => dispatch({ ...args, type: 'trade-set' })}
+                onCancelTrade={() => dispatch({ type: 'trade-cancel' })}
+                onDoneTrade={() => dispatch({ type: 'trade-done' })}
             />
         </div>
     );

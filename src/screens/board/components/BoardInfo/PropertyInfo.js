@@ -7,9 +7,10 @@ import {
     canMortgage,
     canUnmortgage,
     canSellHouses,
+    canTrade,
 } from '../../services/util.js';
 
-function PropertyInfo({ state, onBuyHouse, onSellHouse, onMortgage }) {
+function PropertyInfo({ state, onBuyHouse, onSellHouse, onMortgage, onTrade }) {
     const property = properties.find(p => p.id === state.selected.tile.id);
     const ownership = state.properties.find(
         p => p.id === state.selected.tile.id,
@@ -70,6 +71,9 @@ function PropertyInfo({ state, onBuyHouse, onSellHouse, onMortgage }) {
                 <button onClick={onMortgage}>
                     Unmortgage for ${Math.ceil(property.price * 0.55)}
                 </button>
+            )}
+            {canTrade(state, property.id) && (
+                <button onClick={onTrade}>Trade</button>
             )}
         </div>
     );
