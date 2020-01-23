@@ -1,3 +1,4 @@
+import React from 'react';
 import { tiles, properties } from './board.json';
 import {
     isBuyable,
@@ -12,7 +13,43 @@ import {
     canSellHouses,
 } from './util.js';
 
-export function reducer(state, action) {
+export function useBoardState() {
+    return React.useReducer(reducer, null, init);
+}
+
+function init() {
+    return {
+        players: [
+            { position: 0, money: 1500, color: 'red', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'blue', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'green', frozenTurns: -1 },
+            { position: 0, money: 1500, color: 'gold', frozenTurns: -1 },
+        ],
+        properties: [
+            // {
+            //     index: 2,
+            //     id: 'asdasd'
+            //     ownedBy: -1, // player index,
+            //     houses: 0, // 0 - 5
+            //     mortgaged: false
+            // }
+        ],
+        trade: [
+            // { type: 'property', id: id },
+            // { type: 'money', player: number, amount: number }
+        ],
+        turn: 0,
+        phase: 'roll',
+        lastDices: [0, 0],
+        doublesCount: 0,
+        selected: {
+            type: 'player',
+            index: 0,
+        },
+    };
+}
+
+function reducer(state, action) {
     let newState = { ...state };
     switch (action.type) {
         case 'next': {

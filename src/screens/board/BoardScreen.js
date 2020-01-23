@@ -13,11 +13,11 @@ import FreeParkingHut from './components/Huts/FreeParkingHut';
 import GoToJailHut from './components/Huts/GoToJailHut';
 import PlayerToken from './components/PlayerToken';
 import BoardInfo from './components/BoardInfo';
-import { reducer } from './services/reducer';
+import { useBoardState } from './services/reducer';
 import BoardCenter from './components/BoardCenter';
 
 function BoardScreen() {
-    const [state, dispatch] = React.useReducer(reducer, null, init);
+    const [state, dispatch] = useBoardState();
 
     function renderTile(tile, index) {
         const Hut = MAP[tile.type];
@@ -85,38 +85,6 @@ const MAP = {
     chance: ChanceHut,
     tax: TaxHut,
 };
-
-function init() {
-    return {
-        players: [
-            { position: 0, money: 1500, color: 'red', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'blue', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'green', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'gold', frozenTurns: -1 },
-        ],
-        properties: [
-            // {
-            //     index: 2,
-            //     id: 'asdasd'
-            //     ownedBy: -1, // player index,
-            //     houses: 0, // 0 - 5
-            //     mortgaged: false
-            // }
-        ],
-        trade: [
-            // { type: 'property', id: id },
-            // { type: 'money', player: number, amount: number }
-        ],
-        turn: 0,
-        phase: 'roll',
-        lastDices: [0, 0],
-        doublesCount: 0,
-        selected: {
-            type: 'player',
-            index: 0,
-        },
-    };
-}
 
 function getSide(index) {
     const tilesPerSide = tiles.length / 4;
