@@ -13,6 +13,9 @@ function RailroadHut({ state, tile, side, children, onClick }) {
         const ownedCount = getRailroadsOwned(state, ownership.ownedBy);
         const rent = railroad.multpliedrent[ownedCount - 1];
         moneyText = 'R$' + rent;
+        if (ownership.mortgaged) {
+            moneyText = 'M';
+        }
     }
     return (
         <div className={classes.join(' ')} onClick={onClick}>

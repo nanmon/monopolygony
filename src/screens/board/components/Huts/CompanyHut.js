@@ -13,6 +13,9 @@ function CompanyHut({ state, tile, side, children, onClick }) {
         const ownedCount = getCompaniesOwned(state, ownership.ownedBy);
         const multiplier = company.multpliedrent[ownedCount - 1];
         moneyText = 'Dx' + multiplier;
+        if (ownership.mortgaged) {
+            moneyText = 'M';
+        }
     }
     return (
         <div className={classes.join(' ')} onClick={onClick}>

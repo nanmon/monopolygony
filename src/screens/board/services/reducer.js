@@ -230,6 +230,7 @@ function payRent(state) {
     const tile = tiles[player.position];
     const property = properties.find(p => p.id === tile.id);
     const ownership = state.properties.find(p => p.id === tile.id);
+    if (ownership.mortgaged) return newState;
     let rent = 0;
     switch (tile.type) {
         case 'property': {
