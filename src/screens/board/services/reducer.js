@@ -98,7 +98,9 @@ function unjailedMachine(state, action) {
         }
         case 'advance': {
             newState = advance(newState);
-            newState.phase = 'tileEffect';
+            if (newState.phase === 'advance') {
+                newState.phase = 'tileEffect';
+            }
             break;
         }
         case 'tileEffect': {
@@ -201,6 +203,15 @@ function roll(state, action) {
 function advance(state) {
     const newState = { ...state };
     const player = { ...state.players[state.turn] };
+    if (state.doublesCount === 3) {
+        newState.doublesCount = 0;
+        player.position = 10;
+        player.sentToJail = true;
+        newState.players = [...state.players];
+        newState.players[state.turn] = player;
+        newState.phase = 'end';
+        return newState;
+    }
     const [dice1, dice2] = newState.lastDices;
     const oldPosition = player.position;
     player.position = (player.position + dice1 + dice2) % 40;
@@ -306,6 +317,8 @@ function nextTurn(state) {
     if (player.sentToJail) {
         player.sentToJail = false;
         player.frozenTurns = 3;
+    } else if (state.doublesCount > 0 && state.doublesCount < 3) {
+        return newState;
     }
     newState.players = [...state.players];
     newState.players[state.turn] = player;
