@@ -43,15 +43,15 @@ function getNextText(state) {
     const player = state.players[state.turn];
     const tile = tiles[player.position];
     if (state.phase === 'roll') {
-        if (player.frozenTurns === 0) return 'Pay $50 fine and roll dices';
         return 'Roll dices';
     } else if (state.phase === 'tileEffect') {
         const owner = getOwner(state);
         if (owner !== -1 && owner !== state.turn) return 'Pay rent';
-        if (player.frozenTurns >= 0) return 'Stay in jail';
         if (tile.type === 'gotojail') return 'Go to jail';
         if (tile.type === 'tax') return 'Pay tax';
         return 'Continue';
+    } else if (state.phase === 'payFine') {
+        return 'Pay $50 fine';
     }
     return 'Continue';
 }

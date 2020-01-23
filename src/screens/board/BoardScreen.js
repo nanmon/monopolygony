@@ -110,6 +110,7 @@ function init() {
         turn: 0,
         phase: 'roll',
         lastDices: [0, 0],
+        doublesCount: 0,
         selected: {
             type: 'player',
             index: 0,

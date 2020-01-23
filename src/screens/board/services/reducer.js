@@ -16,7 +16,10 @@ export function reducer(state, action) {
     let newState = { ...state };
     switch (action.type) {
         case 'next': {
-            newState = nextReducer(newState, action);
+            const player = state.players[state.turn];
+            if (player.frozenTurns <= 0)
+                newState = unjailedMachine(newState, action);
+            else newState = jailedMachine(newState, action);
             break;
         }
         case 'select': {
@@ -46,12 +49,14 @@ export function reducer(state, action) {
     return newState;
 }
 
-function nextReducer(state, action) {
+function unjailedMachine(state, action) {
     let newState = { ...state };
     switch (state.phase) {
         case 'roll': {
             newState = roll(newState, action);
-            newState.phase = 'advance';
+            if (newState.phase === 'roll') {
+                newState.phase = 'advance';
+            }
             break;
         }
         case 'advance': {
@@ -70,6 +75,47 @@ function nextReducer(state, action) {
         }
         case 'end': {
             newState = nextTurn(newState);
+            newState.phase = 'roll';
+            break;
+        }
+        default:
+            throw new Error('invalid action type');
+    }
+    return newState;
+}
+
+function jailedMachine(state, action) {
+    let newState = { ...state };
+    switch (state.phase) {
+        case 'roll': {
+            newState = jailedRoll(newState, action);
+            if (newState.phase === 'roll') {
+                // asume stayed in jail
+                newState.phase = 'end';
+            }
+            break;
+        }
+        case 'payFine': {
+            newState = payJail(newState, action);
+            newState.phase = 'advance';
+            break;
+        }
+        case 'advance': {
+            newState = advance(newState);
+            newState.phase = 'tileEffect';
+            break;
+        }
+        case 'tileEffect': {
+            newState = tileEffect(newState, action);
+            if (newState.phase === 'tileEffect') {
+                // no effect, skip end
+                newState = jailedEnd(newState);
+                newState.phase = 'roll';
+            }
+            break;
+        }
+        case 'end': {
+            newState = jailedEnd(newState);
             newState.phase = 'roll';
             break;
         }
@@ -107,6 +153,11 @@ function tileEffect(state, action) {
 function roll(state, action) {
     const newState = { ...state };
     newState.lastDices = [action.dice1, action.dice2];
+    if (action.dice1 === action.dice2) {
+        newState.doublesCount++;
+    } else {
+        newState.doublesCount = 0;
+    }
     return newState;
 }
 
@@ -201,7 +252,7 @@ function applyMisc(state) {
             break;
         case 'gotojail':
             player.position = 10;
-            player.frozenTurns = 3;
+            player.sentToJail = true;
             break;
         default:
             return newState;
@@ -214,13 +265,14 @@ function applyMisc(state) {
 
 function nextTurn(state) {
     const newState = { ...state };
+    const player = { ...state.players[state.turn] };
+    if (player.sentToJail) {
+        player.sentToJail = false;
+        player.frozenTurns = 3;
+    }
+    newState.players = [...state.players];
+    newState.players[state.turn] = player;
     newState.turn = (state.turn + 1) % state.players.length;
-    // const nextPlayer = { ...state.players[newState.turn] };
-    // if (!nextPlayer.frozenTurns || nextPlayer.frozenTurns <= 0) return newState;
-    // nextPlayer.frozenTurns--;
-    // newState.phase = 'end';
-    // newState.players = [...state.players];
-    // newState.players[newState.turn] = nextPlayer;
     return newState;
 }
 
@@ -293,4 +345,41 @@ function mortgage(state) {
         newState.players[ownership.ownedBy] = player;
         return newState;
     }
+}
+
+function jailedRoll(state, action) {
+    const newState = { ...state };
+    newState.lastDices = [action.dice1, action.dice2];
+    const player = { ...state.players[state.turn] };
+    if (action.dice1 === action.dice2) {
+        player.frozenTurns = 1;
+        newState.players = [...state.players];
+        newState.players[state.turn] = player;
+        newState.phase = 'advance';
+    } else if (player.frozenTurns === 1) {
+        // last turn
+        newState.phase = 'payFine';
+    } else {
+        newState.phase = 'end';
+    }
+    return newState;
+}
+
+function payJail(state) {
+    const newState = { ...state };
+    const player = { ...state.players[state.turn] };
+    player.money -= 50;
+    newState.players = [...state.players];
+    newState.players[state.turn] = player;
+    return newState;
+}
+
+function jailedEnd(state) {
+    const newState = { ...state };
+    const player = { ...state.players[state.turn] };
+    player.frozenTurns--;
+    newState.players = [...state.players];
+    newState.players[newState.turn] = player;
+    newState.turn = (state.turn + 1) % state.players.length;
+    return newState;
 }
