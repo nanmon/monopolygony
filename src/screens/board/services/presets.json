@@ -1,0 +1,95 @@
+{
+    "regular": {
+        "money": 1500,
+        "properties": []
+    },
+    "bigboys": {
+        "money": 1500,
+        "properties": [
+            {
+                "index": 16,
+                "id": "w4-1",
+                "ownedBy": 0,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 18,
+                "id": "w4-2",
+                "ownedBy": 0,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 19,
+                "id": "w4-3",
+                "ownedBy": 0,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 21,
+                "id": "w5-1",
+                "ownedBy": 1,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 23,
+                "id": "w5-2",
+                "ownedBy": 1,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 24,
+                "id": "w5-3",
+                "ownedBy": 1,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 26,
+                "id": "w6-1",
+                "ownedBy": 2,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 27,
+                "id": "w6-2",
+                "ownedBy": 2,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 29,
+                "id": "w6-3",
+                "ownedBy": 2,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 31,
+                "id": "w7-1",
+                "ownedBy": 3,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 32,
+                "id": "w7-2",
+                "ownedBy": 3,
+                "houses": 0,
+                "mortgaged": false
+            },
+            {
+                "index": 33,
+                "id": "w7-3",
+                "ownedBy": 3,
+                "houses": 0,
+                "mortgaged": false
+            }
+        ]
+    }
+}

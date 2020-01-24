@@ -69,10 +69,11 @@ export function canBuyHouses(state, propertyId) {
     const owner = state.players[ownership.ownedBy];
     if (owner.money < property.housecost) return false;
     const block = properties.filter(p => p.group === property.group);
-    const blockHouses = block.map(p => {
-        const own = state.properties.find(op => op.id === p.id);
-        return own ? own.houses : -1;
-    });
+    const blockOwns = block.map(p =>
+        state.properties.find(op => op.id === p.id),
+    );
+    if (blockOwns.some(b => b.mortgaged)) return false;
+    const blockHouses = blockOwns.map(p => p.houses);
     const minHouses = Math.min(...blockHouses);
     return ownership.houses === minHouses;
 }
@@ -84,7 +85,16 @@ export function canSellHouses(state, propertyId) {
 
 export function canMortgage(state, propertyId) {
     const ownership = state.properties.find(p => p.id === propertyId);
-    return ownership && !ownership.mortgaged;
+    if (!ownership) return false;
+    const property = properties.find(p => p.id === propertyId);
+    if (getBlockOwner(state, property.group) !== -1) {
+        const blockProps = properties.filter(p => p.group === property.group);
+        const blockOwns = blockProps.map(p =>
+            state.properties.find(op => op.id === p.id),
+        );
+        if (blockOwns.some(p => p.houses > 0)) return false;
+    }
+    return !ownership.mortgaged;
 }
 
 export function canUnmortgage(state, propertyId) {

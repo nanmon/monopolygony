@@ -15,27 +15,34 @@ import {
     getDebt,
 } from './util.js';
 
-export function useBoardState() {
-    return React.useReducer(reducer, null, init);
+export function useBoardState(preset) {
+    return React.useReducer(reducer, preset, init);
 }
 
-function init() {
+function init(preset) {
     return {
         players: [
-            { position: 0, money: 1500, color: 'red', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'blue', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'green', frozenTurns: -1 },
-            { position: 0, money: 1500, color: 'gold', frozenTurns: -1 },
+            { position: 0, money: preset.money, color: 'red', frozenTurns: -1 },
+            {
+                position: 0,
+                money: preset.money,
+                color: 'blue',
+                frozenTurns: -1,
+            },
+            {
+                position: 0,
+                money: preset.money,
+                color: 'green',
+                frozenTurns: -1,
+            },
+            {
+                position: 0,
+                money: preset.money,
+                color: 'gold',
+                frozenTurns: -1,
+            },
         ],
-        properties: [
-            // {
-            //     index: 2,
-            //     id: 'asdasd'
-            //     ownedBy: -1, // player index,
-            //     houses: 0, // 0 - 5
-            //     mortgaged: false
-            // }
-        ],
+        properties: preset.properties,
         trade: [
             // { player: number, money: number, properties: id[] },
         ],

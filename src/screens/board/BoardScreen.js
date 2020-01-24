@@ -16,9 +16,12 @@ import BoardInfo from './components/BoardInfo';
 import { useBoardState } from './services/reducer';
 import BoardCenter from './components/BoardCenter';
 import { isBankrupt } from './services/util';
+import { bigboys, regular } from './services/presets.json';
+
+const PRESET = process.env.NODE_ENV === 'production' ? regular : bigboys;
 
 function BoardScreen() {
-    const [state, dispatch] = useBoardState();
+    const [state, dispatch] = useBoardState(PRESET);
 
     function onHutClick(tile) {
         if (state.trade.length > 0) {
