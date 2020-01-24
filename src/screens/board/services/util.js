@@ -144,3 +144,16 @@ export function isBankrupt(state, playerIndex = state.turn) {
     });
     return payable < debt; // can't pay debt
 }
+
+export function canCompleteTrade(state) {
+    if (state.trade.length !== 2) return false;
+    const trade1 = state.trade[0];
+    if (trade1.moneyStr === '' || trade1.money < 0) return false;
+    const player1 = state.players[trade1.playerIndex];
+    if (player1.money < trade1.money) return false;
+    const trade2 = state.trade[1];
+    if (trade2.moneyStr === '' || trade2.money < 0) return false;
+    const player2 = state.players[trade2.playerIndex];
+    if (player2.money < trade2.money) return false;
+    return true;
+}

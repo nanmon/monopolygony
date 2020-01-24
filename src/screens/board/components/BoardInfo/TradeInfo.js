@@ -1,6 +1,7 @@
 import React from 'react';
 import PlayerToken from '../PlayerToken';
 import { properties } from '../../services/board.json';
+import { canCompleteTrade } from '../../services/util';
 
 function TradeInfo({ state, onMoney, onCancel, onDone }) {
     const trade1 = state.trade[0];
@@ -16,9 +17,10 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
 
     function onChangeMoney(e, trade) {
         const { value } = e.target;
-        const money = Number(value);
-        onMoney({ playerIndex: trade.playerIndex, money });
+        onMoney({ playerIndex: trade.playerIndex, money: value });
     }
+
+    const disabled = !canCompleteTrade(state);
 
     return (
         <div className="TradeInfo">
@@ -27,7 +29,7 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
             <p>Money:</p>
             <input
                 type="number"
-                value={trade1.money}
+                value={trade1.moneyStr}
                 onChange={e => onChangeMoney(e, trade1)}
             />
             {trade1Props.map(p => (
@@ -41,7 +43,7 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                     <p>Money:</p>
                     <input
                         type="number"
-                        value={trade2.money}
+                        value={trade2.moneyStr}
                         onChange={e => onChangeMoney(e, trade2)}
                     />
                     {trade2Props.map(p => (
@@ -52,7 +54,9 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                 </>
             )}
             <button onClick={onCancel}>Cancel Trade</button>
-            {trade2 && <button onClick={onDone}>Do Trade</button>}
+            <button disabled={disabled} onClick={onDone}>
+                Do Trade
+            </button>
         </div>
     );
 }

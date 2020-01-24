@@ -503,17 +503,21 @@ function trade(state, action) {
             );
             let newTradeObj;
             newState.trade = [...state.trade];
+            let moneyNum = Number(action.money);
+            if (Number.isNaN(moneyNum)) moneyNum = -1;
             if (tradeIndex === -1) {
                 if (state.trade.length === 2) return state;
                 newTradeObj = {
                     playerIndex: action.playerIndex,
-                    money: action.money,
+                    money: moneyNum,
+                    moneyStr: action.money,
                     properties: [],
                 };
                 newState.trade.push(newTradeObj);
             } else {
                 newTradeObj = { ...state.trade[tradeIndex] };
-                newTradeObj.money = action.money;
+                newTradeObj.moneyStr = action.money;
+                newTradeObj.money = moneyNum;
                 newState.trade[tradeIndex] = newTradeObj;
             }
             break;
