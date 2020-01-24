@@ -11,6 +11,8 @@ import {
     canMortgage,
     canUnmortgage,
     canSellHouses,
+    isBankrupt,
+    getDebt,
 } from './util.js';
 
 export function useBoardState() {
@@ -52,6 +54,7 @@ function reducer(state, action) {
     let newState = { ...state };
     switch (action.type) {
         case 'next': {
+            if (cantProcede(newState)) return state;
             const player = state.players[state.turn];
             if (player.frozenTurns <= 0)
                 newState = unjailedMachine(newState, action);
@@ -112,6 +115,7 @@ function unjailedMachine(state, action) {
         }
         case 'tileEffect': {
             newState = tileEffect(newState, action);
+            newState = treatBankrupcy(newState);
             if (newState.phase === 'tileEffect') {
                 // skip end
                 newState = nextTurn(newState);
@@ -143,6 +147,7 @@ function jailedMachine(state, action) {
         }
         case 'payFine': {
             newState = payJail(newState, action);
+            newState = treatBankrupcy(newState);
             newState.phase = 'advance';
             break;
         }
@@ -153,6 +158,7 @@ function jailedMachine(state, action) {
         }
         case 'tileEffect': {
             newState = tileEffect(newState, action);
+            newState = treatBankrupcy(newState);
             if (newState.phase === 'tileEffect') {
                 // no effect, skip end
                 newState = jailedEnd(newState);
@@ -330,7 +336,9 @@ function nextTurn(state) {
     }
     newState.players = [...state.players];
     newState.players[state.turn] = player;
-    newState.turn = (state.turn + 1) % state.players.length;
+    do {
+        newState.turn = (newState.turn + 1) % state.players.length;
+    } while (isBankrupt(newState));
     return newState;
 }
 
@@ -438,7 +446,9 @@ function jailedEnd(state) {
     player.frozenTurns--;
     newState.players = [...state.players];
     newState.players[newState.turn] = player;
-    newState.turn = (state.turn + 1) % state.players.length;
+    do {
+        newState.turn = (newState.turn + 1) % state.players.length;
+    } while (isBankrupt(newState));
     return newState;
 }
 
@@ -548,4 +558,26 @@ function trade(state, action) {
             throw new Error('invalid trade type');
     }
     return newState;
+}
+
+function treatBankrupcy(state) {
+    const newState = { ...state };
+    newState.properties = [...state.properties];
+    state.players.forEach((_, playerIndex) => {
+        if (isBankrupt(newState, playerIndex)) {
+            // release properties not from this player
+            newState.properties = newState.properties.filter(
+                p => p.ownedBy !== playerIndex,
+            );
+        }
+    });
+    return newState;
+}
+
+function cantProcede(state) {
+    const bankruptPlayers = state.players.filter((_, playerIndex) =>
+        isBankrupt(state, playerIndex),
+    );
+    if (bankruptPlayers.length < state.players.length - 1) return false; // end game
+    return !isBankrupt(state) && getDebt(state) > 0;
 }

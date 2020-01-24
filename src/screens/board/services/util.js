@@ -103,3 +103,44 @@ export function canTrade(state, propertyId) {
     if (state.trade[1].playerIndex === ownership.ownedBy) return true;
     return false;
 }
+
+export function userAssetsValue(state, playerIndex = state.turn) {
+    const owned = state.properties
+        .filter(p => p.ownedBy === playerIndex)
+        .map(ownership => {
+            const property = properties.find(pp => ownership.id === pp.id);
+            return { ...property, ownership };
+        });
+    let assets = 0;
+    owned.forEach(p => {
+        if (p.ownership.mortgaged) assets += p.price / 2;
+        else assets += p.price;
+        if (p.housecost) assets += p.ownership.houses * p.housecost;
+    });
+    return assets;
+}
+
+export function getDebt(state, playerIndex = state.turn) {
+    const player = state.players[playerIndex];
+    if (player.money >= 0) return 0;
+    // if money is negative, player is in debt
+    return -player.money;
+}
+
+export function isBankrupt(state, playerIndex = state.turn) {
+    const debt = getDebt(state, playerIndex);
+    if (debt === 0) return false;
+    const owned = state.properties
+        .filter(p => p.ownedBy === playerIndex)
+        .map(ownership => {
+            const property = properties.find(pp => ownership.id === pp.id);
+            return { ...property, ownership };
+        });
+    let payable = 0;
+    owned.forEach(p => {
+        if (p.ownership.mortgaged) return;
+        else payable += p.price / 2;
+        if (p.housecost) payable += (p.ownership.houses * p.housecost) / 2;
+    });
+    return payable < debt; // can't pay debt
+}

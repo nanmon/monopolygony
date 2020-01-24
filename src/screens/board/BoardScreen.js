@@ -15,6 +15,7 @@ import PlayerToken from './components/PlayerToken';
 import BoardInfo from './components/BoardInfo';
 import { useBoardState } from './services/reducer';
 import BoardCenter from './components/BoardCenter';
+import { isBankrupt } from './services/util';
 
 function BoardScreen() {
     const [state, dispatch] = useBoardState();
@@ -48,7 +49,10 @@ function BoardScreen() {
         const Hut = MAP[tile.type];
         const side = getSide(index);
         const classes = ['tile', tile.id, side];
-        const tokens = state.players.filter(p => p.position === index);
+        const tokens = state.players.filter((p, pIndex) => {
+            if (isBankrupt(state, pIndex)) return false;
+            return p.position === index;
+        });
         const owned = state.properties.find(p => p.index === index);
         return (
             <div
