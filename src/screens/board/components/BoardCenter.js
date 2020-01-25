@@ -36,6 +36,7 @@ function BoardCenter({ state, onNext }) {
                 <div className="dices">
                     <span>Dices:</span>|{state.lastDices[0]}|
                     {state.lastDices[1]}|
+                    {state.lastDices[0] === state.lastDices[1] && 'Doubles!'}
                 </div>
             )}
         </div>
@@ -89,7 +90,7 @@ function getNextText(state) {
 
 function endText(state, player) {
     if (state.doublesCount > 0 && state.doublesCount < 3) {
-        return 'Doubles!';
+        return 'Roll again!';
     }
     if (player.frozenTurns > 1) {
         return 'Stay in jail';
