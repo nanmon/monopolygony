@@ -90,7 +90,15 @@ export function canBuyHouses(state, propertyId) {
 
 export function canSellHouses(state, propertyId) {
     const ownership = state.properties.find(p => p.id === propertyId);
-    if (ownership && ownership.houses > 0) return true;
+    if (!ownership || ownership.houses === 0) return false;
+    const property = properties.find(p => p.id === propertyId);
+    const block = properties.filter(p => p.group === property.group);
+    const blockOwns = block.map(p =>
+        state.properties.find(op => op.id === p.id),
+    );
+    const blockHouses = blockOwns.map(p => p.houses);
+    const maxHouses = Math.max(...blockHouses);
+    return ownership.houses === maxHouses;
 }
 
 export function canMortgage(state, propertyId) {
