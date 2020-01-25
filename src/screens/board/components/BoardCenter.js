@@ -1,5 +1,10 @@
 import React from 'react';
-import { getOwner, isBuyable, isMiscTile } from '../services/util';
+import {
+    getOwner,
+    isBuyable,
+    isMiscTile,
+    canBuyProperty,
+} from '../services/util';
 import { tiles } from '../services/board.json';
 import PlayerToken from './PlayerToken';
 
@@ -16,7 +21,7 @@ function BoardCenter({ state, onNext }) {
     }
     return (
         <div className="BoardCenter center">
-            {state.phase === 'tileEffect' && isBuyable(state) && (
+            {state.phase === 'tileEffect' && canBuyProperty(state) && (
                 <button onClick={() => onNext({ buy: true })}>
                     Buy property
                 </button>

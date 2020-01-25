@@ -61,7 +61,7 @@ function reducer(state, action) {
     let newState = { ...state };
     switch (action.type) {
         case 'next': {
-            if (cantProcede(newState)) return state;
+            if (!canProcede(newState)) return state;
             const player = state.players[state.turn];
             if (player.frozenTurns <= 0)
                 newState = unjailedMachine(newState, action);
@@ -585,10 +585,11 @@ function treatBankrupcy(state) {
     return newState;
 }
 
-function cantProcede(state) {
+function canProcede(state) {
     const bankruptPlayers = state.players.filter((_, playerIndex) =>
         isBankrupt(state, playerIndex),
     );
-    if (bankruptPlayers.length < state.players.length - 1) return false; // end game
-    return !isBankrupt(state) && getDebt(state) > 0;
+    if (bankruptPlayers.length === state.players.length - 1) return false; // end game
+    if (!isBankrupt(state) && getDebt(state) > 0) return false;
+    return true;
 }

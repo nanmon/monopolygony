@@ -11,6 +11,16 @@ export function isBuyable(state, id = getCurrentTileId(state)) {
     if (property && property.price) return true;
 }
 
+export function canBuyProperty(
+    state,
+    id = getCurrentTileId(state),
+    playerIndex = state.turn,
+) {
+    if (!isBuyable(state, id)) return false;
+    const property = properties.find(p => p.id === id);
+    return property.price < state.players[playerIndex].money;
+}
+
 export function isMiscTile(state, id = getCurrentTileId(state)) {
     return properties.find(p => p.id === id) == null;
 }
