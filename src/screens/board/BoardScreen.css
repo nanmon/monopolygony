@@ -3,7 +3,7 @@
     height: 100vh;
     display: flex;
     align-items: center;
-    background-color: aqua;
+    background-color: #06bffd;
 }
 
 @media (max-width: 100vh) {
@@ -15,10 +15,12 @@
     }
 }
 
-.BoardScreen .after-board {
+.BoardScreen .AfterBoard {
     display: flex;
-    flex-grow: 1;
+    flex-shrink: 1;
     flex-direction: column;
+    align-self: stretch;
+    overflow: hidden;
 }
 
 /* @media (min-width: 70vh) and (max-width: 130vh) {
@@ -57,4 +59,13 @@
 .BoardScreen .tile {
     overflow: hidden;
     border: 1px solid black;
+    font-size: 0.7em;
+}
+
+.BoardScreen .ActionButton {
+    height: 64px;
+    background-color: #fff5;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
 }

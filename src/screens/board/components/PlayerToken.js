@@ -2,18 +2,26 @@ import React from 'react';
 import './styles/PlayerToken.css';
 
 function PlayerToken({ player, onClick }) {
+    if (onClick) {
+        return (
+            <button
+                className="PlayerToken"
+                onClick={onClick}
+                style={{
+                    backgroundColor: player.color,
+                    borderColor: player.color === 'yellow' ? 'black' : 'white',
+                }}
+            ></button>
+        );
+    }
     return (
-        <button
+        <div
             className="PlayerToken"
             style={{
                 backgroundColor: player.color,
                 borderColor: player.color === 'yellow' ? 'black' : 'white',
             }}
-            onClick={e => {
-                e.stopPropagation();
-                if (onClick) onClick();
-            }}
-        ></button>
+        ></div>
     );
 }
 

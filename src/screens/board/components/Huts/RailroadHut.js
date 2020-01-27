@@ -17,6 +17,14 @@ function RailroadHut({ state, tile, side, children, onClick }) {
             moneyText = 'M';
         }
     }
+    if (
+        state.selected &&
+        state.selected.tile &&
+        state.selected.tile.id === railroad.id &&
+        state.trade.length === 0
+    ) {
+        classes.push('selected');
+    }
     return (
         <div className={classes.join(' ')} onClick={onClick}>
             <span>Railroad</span>

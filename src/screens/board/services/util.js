@@ -69,6 +69,14 @@ export function getCompaniesOwned(state, playerIndex) {
     }).length;
 }
 
+export function blockHasHouses(state, block) {
+    const blockProps = properties.filter(p => p.group === block);
+    const blockOwns = blockProps.map(p =>
+        state.properties.find(op => op.id === p.id),
+    );
+    return blockOwns.some(o => o && o.houses > 0);
+}
+
 export function canBuyHouses(state, propertyId) {
     const tile = tiles.find(t => t.id === propertyId);
     if (tile.type !== 'property') return false;
@@ -125,7 +133,9 @@ export function canUnmortgage(state, propertyId) {
 
 export function canTrade(state, propertyId) {
     const ownership = state.properties.find(p => p.id === propertyId);
+    const property = properties.find(p => p.id === propertyId);
     if (!ownership) return false;
+    if (blockHasHouses(state, property.group)) return false;
     if (state.trade.length < 2) return true;
     if (state.trade[0].playerIndex === ownership.ownedBy) return true;
     if (state.trade[1].playerIndex === ownership.ownedBy) return true;

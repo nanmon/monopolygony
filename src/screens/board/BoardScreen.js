@@ -38,13 +38,14 @@ function BoardScreen() {
     }
 
     function onPlayerClick(player) {
-        if (state.trade.length === 0) {
-            dispatch({ type: 'select', player });
-        } else if (state.trade.length === 1) {
-            const playerIndex = state.players.findIndex(
-                p => p.color === player.color,
-            );
-            dispatch({ type: 'trade-set', playerIndex, money: 0 });
+        if (state.trade.length === 1) {
+            return e => {
+                e.stopPropagation();
+                const playerIndex = state.players.findIndex(
+                    p => p.color === player.color,
+                );
+                dispatch({ type: 'trade-set', playerIndex, money: 0 });
+            };
         }
     }
 
@@ -76,7 +77,7 @@ function BoardScreen() {
                         <PlayerToken
                             key={player.color}
                             player={player}
-                            onClick={() => onPlayerClick(player)}
+                            onClick={onPlayerClick(player)}
                         />
                     ))}
                 </Hut>
@@ -93,16 +94,22 @@ function BoardScreen() {
                 />
                 {tiles.map(renderTile)}
             </div>
-            <BoardInfo
-                state={state}
-                onBuyHouse={() => dispatch({ type: 'buy-house' })}
-                onSellHouse={() => dispatch({ type: 'sell-house' })}
-                onMortgage={() => dispatch({ type: 'mortgage' })}
-                onTrade={args => dispatch({ ...args, type: 'trade-add' })}
-                onMoneyTrade={args => dispatch({ ...args, type: 'trade-set' })}
-                onCancelTrade={() => dispatch({ type: 'trade-cancel' })}
-                onDoneTrade={() => dispatch({ type: 'trade-done' })}
-            />
+            <div className="AfterBoard">
+                <BoardInfo
+                    state={state}
+                    onBuyHouse={() => dispatch({ type: 'buy-house' })}
+                    onSellHouse={() => dispatch({ type: 'sell-house' })}
+                    onMortgage={() => dispatch({ type: 'mortgage' })}
+                    onTrade={args => dispatch({ ...args, type: 'trade-add' })}
+                    onMoneyTrade={args =>
+                        dispatch({ ...args, type: 'trade-set' })
+                    }
+                    onCancelTrade={() => dispatch({ type: 'trade-cancel' })}
+                    onDoneTrade={() => dispatch({ type: 'trade-done' })}
+                    onClose={() => dispatch({ type: 'select' })}
+                    onNext={args => dispatch({ ...args, type: 'next' })}
+                />
+            </div>
         </div>
     );
 }

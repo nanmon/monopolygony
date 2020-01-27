@@ -13,6 +13,7 @@ import {
     canSellHouses,
     isBankrupt,
     getDebt,
+    canTrade,
 } from './util.js';
 
 export function useBoardState(preset) {
@@ -50,10 +51,7 @@ function init(preset) {
         phase: 'roll',
         lastDices: [0, 0],
         doublesCount: 0,
-        selected: {
-            type: 'player',
-            index: 0,
-        },
+        selected: null,
     };
 }
 
@@ -72,8 +70,10 @@ function reducer(state, action) {
             if (action.player) {
                 const index = state.players.indexOf(action.player);
                 newState.selected = { type: 'player', index };
-            } else {
+            } else if (action.tile) {
                 newState.selected = { type: 'property', tile: action.tile };
+            } else {
+                newState.selected = null;
             }
             break;
         }
@@ -463,6 +463,7 @@ function trade(state, action) {
     const newState = { ...state };
     switch (action.type) {
         case 'trade-add': {
+            if (!canTrade(state, action.propertyId)) return state;
             const tradeIndex = state.trade.findIndex(
                 t => t.playerIndex === action.playerIndex,
             );
@@ -473,17 +474,26 @@ function trade(state, action) {
                 newTradeObj = {
                     playerIndex: action.playerIndex,
                     money: 0,
+                    moneyStr: '0',
                     properties: [action.propertyId],
                 };
                 newState.trade.push(newTradeObj);
             } else {
                 newTradeObj = { ...state.trade[tradeIndex] };
-                if (newTradeObj.properties.includes(action.propertyId))
-                    return state;
-                newTradeObj.properties = [
-                    ...state.trade[tradeIndex].properties,
+                const foundIndex = newTradeObj.properties.indexOf(
                     action.propertyId,
-                ];
+                );
+                if (foundIndex !== -1) {
+                    newTradeObj.properties = [
+                        ...state.trade[tradeIndex].properties,
+                    ];
+                    newTradeObj.properties.splice(foundIndex, 1);
+                } else {
+                    newTradeObj.properties = [
+                        ...state.trade[tradeIndex].properties,
+                        action.propertyId,
+                    ];
+                }
                 newState.trade[tradeIndex] = newTradeObj;
             }
             break;

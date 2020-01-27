@@ -1,0 +1,46 @@
+.RailroadInfo {
+    overflow: scroll;
+    height: 100%;
+}
+
+.RailroadCard {
+    background-color: cornflowerblue;
+    margin: 5px;
+    border-radius: 2px;
+}
+
+.RailroadCard .Header {
+    padding: 10px;
+    height: 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.RailroadCard .Header button {
+    background: #fff5;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    padding: 0;
+    color: black;
+    border: none;
+    font-size: 0.5em;
+    text-align: center;
+}
+
+.RailroadCard .Content {
+    padding: 10px;
+    color: white;
+}
+
+.RailroadInfo .Actions {
+    display: flex;
+    flex-direction: row;
+}
+
+.RailroadInfo .ActionButton {
+    margin: 5px;
+    flex-grow: 1;
+}

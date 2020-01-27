@@ -19,6 +19,14 @@ function PropertyHut({ state, tile, side, children, onClick }) {
                 moneyText = 'R$' + property.multpliedrent[ownership.houses - 1];
         }
     }
+    if (
+        state.selected &&
+        state.selected.tile &&
+        state.selected.tile.id === property.id &&
+        state.trade.length === 0
+    ) {
+        classes.push('selected');
+    }
     return (
         <div
             className={classes.join(' ')}

@@ -33,3 +33,7 @@
 .RailroadHut.right span {
     transform: rotate(-90deg);
 }
+
+.RailroadHut.selected {
+    border: 1px solid white;
+}

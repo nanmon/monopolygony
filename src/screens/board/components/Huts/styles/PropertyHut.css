@@ -11,6 +11,10 @@
     height: 100%;
 }
 
+.PropertyHut.selected {
+    border: 1px solid white;
+}
+
 .PropertyHut > .group {
     flex-basis: 30%;
 }

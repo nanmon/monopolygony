@@ -33,3 +33,7 @@
 .CompanyHut.right span {
     transform: rotate(-90deg);
 }
+
+.CompanyHut.selected {
+    border: 1px solid white;
+}

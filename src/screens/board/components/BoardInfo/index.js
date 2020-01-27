@@ -4,6 +4,7 @@ import PropertyInfo from './PropertyInfo.js';
 import RailroadInfo from './RailroadInfo.js';
 import CompanyInfo from './CompanyInfo';
 import TradeInfo from './TradeInfo';
+import './styles/BoardInfo.css';
 
 function BoardInfo({
     state,
@@ -14,6 +15,8 @@ function BoardInfo({
     onMoneyTrade,
     onCancelTrade,
     onDoneTrade,
+    onClose,
+    onNext,
 }) {
     function trade() {
         const propertyId = state.selected.tile.id;
@@ -32,8 +35,8 @@ function BoardInfo({
                 onDone={onDoneTrade}
             />
         );
-    } else if (state.selected.type === 'player') {
-        content = <PlayerInfo state={state} />;
+    } else if (state.selected == null) {
+        content = <PlayerInfo state={state} onNext={onNext} />;
     } else if (state.selected.type === 'property') {
         if (state.selected.tile.type === 'property')
             content = (
@@ -43,6 +46,7 @@ function BoardInfo({
                     onSellHouse={onSellHouse}
                     onMortgage={onMortgage}
                     onTrade={trade}
+                    onClose={onClose}
                 />
             );
         else if (state.selected.tile.type === 'railroad')
@@ -51,6 +55,7 @@ function BoardInfo({
                     state={state}
                     onMortgage={onMortgage}
                     onTrade={trade}
+                    onClose={onClose}
                 />
             );
         else if (state.selected.tile.type === 'company')
@@ -59,6 +64,7 @@ function BoardInfo({
                     state={state}
                     onMortgage={onMortgage}
                     onTrade={trade}
+                    onClose={onClose}
                 />
             );
     }
