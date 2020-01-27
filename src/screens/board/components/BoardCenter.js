@@ -7,8 +7,9 @@ function BoardCenter({ state }) {
     return (
         <div className="BoardCenter center">
             <div className="Turn">
-                <span>Turn:</span>
+                <span>{player.money < 0 ? 'In Debt!' : 'Turn:'}</span>
                 <PlayerToken player={player} />
+                {player.money < 0 && <span>${player.money}</span>}
             </div>
             {state.phase !== 'roll' && (
                 <>

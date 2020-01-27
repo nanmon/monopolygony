@@ -1,7 +1,7 @@
 import React from 'react';
 import { properties } from '../services/board.json';
 import './styles/PlayerCard.css';
-import { userAssetsValue } from '../services/util.js';
+import { userAssetsValue, isBankrupt } from '../services/util.js';
 
 function PlayerCard({ state, playerIndex }) {
     const player = state.players[playerIndex];
@@ -15,8 +15,10 @@ function PlayerCard({ state, playerIndex }) {
         if (!groups[p.group]) groups[p.group] = [property];
         else groups[p.group].push(property);
     });
+    const classes = ['PlayerCard'];
+    if (isBankrupt(state, playerIndex)) classes.push('Bankrupt');
     return (
-        <div className="PlayerCard">
+        <div className={classes.join(' ')}>
             <div className="Header">
                 <span
                     className="Token"

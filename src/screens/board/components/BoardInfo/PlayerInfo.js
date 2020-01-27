@@ -9,6 +9,7 @@ import {
     canBuyProperty,
     canProcede,
     isGameOver,
+    isBankrupt,
 } from '../../services/util';
 
 function PlayerInfo({ state, onNext }) {
@@ -51,6 +52,7 @@ export default PlayerInfo;
 function getNextText(state) {
     if (isGameOver(state)) return 'Game over';
     if (!canProcede(state)) return 'Pay your debt to continue';
+    if (isBankrupt(state)) return 'Bankrupt :c';
     const player = state.players[state.turn];
     const tile = tiles[player.position];
     switch (state.phase) {
