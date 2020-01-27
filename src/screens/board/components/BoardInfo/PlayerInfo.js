@@ -5,7 +5,6 @@ import { tiles } from '../../services/board.json';
 import {
     isMiscTile,
     isBuyable,
-    getOwner,
     canBuyProperty,
     canProcede,
     isGameOver,
@@ -81,8 +80,9 @@ function getNextText(state) {
                 if (canBuyProperty(state)) return 'Buy property';
                 return "Can't afford it! Skip";
             }
-            const owner = getOwner(state);
-            if (owner !== -1 && owner !== state.turn) {
+            const ownership = state.properties.find(p => p.id === tile.id);
+            if (ownership && ownership.ownedBy !== state.turn) {
+                if (ownership.mortgaged) return endText(state, player);
                 return 'Pay rent';
             }
             return endText(state, player);
@@ -98,6 +98,7 @@ function getNextText(state) {
 
 function endText(state, player) {
     if (state.doublesCount > 0 && state.doublesCount < 3) {
+        if (player.sentToJail) return 'Next player';
         return 'Roll again!';
     }
     if (player.frozenTurns > 1) {

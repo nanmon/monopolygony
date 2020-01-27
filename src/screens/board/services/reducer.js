@@ -203,7 +203,7 @@ function tileEffect(state, action) {
         if (owner !== state.turn) {
             // pay rent
             newState = payRent(state);
-            newState.phase = 'end';
+            // newState.phase = 'end'; phase changes if rent applied
         } // else : pass if owned by current player
     }
     return newState;
@@ -283,6 +283,7 @@ function payRent(state) {
     const owner = { ...state.players[ownership.ownedBy] };
     owner.money += rent;
     newState.players[ownership.ownedBy] = owner;
+    newState.phase = 'next';
     return newState;
 }
 
@@ -338,6 +339,7 @@ function nextTurn(state) {
     if (player.sentToJail) {
         player.sentToJail = false;
         player.frozenTurns = 3;
+        newState.doublesCount = 0;
     } else if (state.doublesCount > 0 && state.doublesCount < 3) {
         return newState;
     }
