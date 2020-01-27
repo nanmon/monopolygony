@@ -76,7 +76,8 @@ function getNextText(state) {
                 return endText(state, player);
             }
             if (isBuyable(state)) {
-                return 'Buy property';
+                if (canBuyProperty(state)) return 'Buy property';
+                return "Can't afford it! Skip";
             }
             const owner = getOwner(state);
             if (owner !== -1 && owner !== state.turn) {
