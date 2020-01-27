@@ -22,6 +22,7 @@ const PRESET = process.env.NODE_ENV === 'production' ? regular : bigboys;
 
 function BoardScreen() {
     const [state, dispatch] = useBoardState(PRESET);
+    const [vState, vDispatch] = React.useReducer(reducer, null, init);
 
     function onHutClick(tile) {
         if (state.trade.length > 0) {
@@ -135,4 +136,12 @@ function getSide(index) {
     const tilesPerSide = tiles.length / 4;
     const sideIndex = Math.floor(index / tilesPerSide);
     return ['bottom', 'left', 'top', 'right'][sideIndex];
+}
+
+function init() {
+    return {};
+}
+
+function reducer(state, action) {
+    return state;
 }

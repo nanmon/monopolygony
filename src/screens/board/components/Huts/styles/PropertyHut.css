@@ -48,10 +48,10 @@
 
 .owner {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
-    border: 1px solid white;
+    width: min(2vh, 2vw);
+    height: min(2vh, 2vw);
+    border-radius: min(1vh, 1vw);
+    border: min(0.1vh, 0.1vw) solid white;
 }
 
 .left .owner {

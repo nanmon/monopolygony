@@ -59,7 +59,7 @@
 .BoardScreen .tile {
     overflow: hidden;
     border: 1px solid black;
-    font-size: 0.7em;
+    font-size: min(2vh, 2vw);
 }
 
 .BoardScreen .ActionButton {
