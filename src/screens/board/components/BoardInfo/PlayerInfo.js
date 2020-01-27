@@ -7,6 +7,8 @@ import {
     isBuyable,
     getOwner,
     canBuyProperty,
+    canProcede,
+    isGameOver,
 } from '../../services/util';
 
 function PlayerInfo({ state, onNext }) {
@@ -22,7 +24,11 @@ function PlayerInfo({ state, onNext }) {
     return (
         <div className="PlayerInfo">
             <div className="Actions">
-                <button className="ActionButton" onClick={next}>
+                <button
+                    className="ActionButton"
+                    disabled={!canProcede(state)}
+                    onClick={next}
+                >
                     {getNextText(state)}
                 </button>
                 {state.phase === 'tileEffect' && canBuyProperty(state) && (
@@ -43,6 +49,8 @@ function PlayerInfo({ state, onNext }) {
 export default PlayerInfo;
 
 function getNextText(state) {
+    if (isGameOver(state)) return 'Game over';
+    if (!canProcede(state)) return 'Pay your debt to continue';
     const player = state.players[state.turn];
     const tile = tiles[player.position];
     switch (state.phase) {

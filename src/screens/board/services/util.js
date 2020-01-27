@@ -195,3 +195,18 @@ export function canCompleteTrade(state) {
     if (player2.money < trade2.money) return false;
     return true;
 }
+
+export function canProcede(state) {
+    if (isGameOver(state)) return false;
+    if (!isBankrupt(state) && getDebt(state) > 0) return false;
+    return true;
+}
+
+export function isGameOver(state) {
+    const bankruptPlayers = state.players.filter((_, playerIndex) =>
+        isBankrupt(state, playerIndex),
+    );
+    // everybody bankrupt except one
+    if (bankruptPlayers.length === state.players.length - 1) return true;
+    return false;
+}

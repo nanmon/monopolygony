@@ -12,8 +12,8 @@ import {
     canUnmortgage,
     canSellHouses,
     isBankrupt,
-    getDebt,
     canTrade,
+    canProcede,
 } from './util.js';
 
 export function useBoardState(preset) {
@@ -593,13 +593,4 @@ function treatBankrupcy(state) {
         }
     });
     return newState;
-}
-
-function canProcede(state) {
-    const bankruptPlayers = state.players.filter((_, playerIndex) =>
-        isBankrupt(state, playerIndex),
-    );
-    if (bankruptPlayers.length === state.players.length - 1) return false; // end game
-    if (!isBankrupt(state) && getDebt(state) > 0) return false;
-    return true;
 }
