@@ -1,5 +1,16 @@
 import { tiles, properties } from './board.json';
 
+export const PLAYER_COLORS = [
+    'red',
+    'blue',
+    'green',
+    'gold',
+    'purple',
+    'darkorange',
+    'pink',
+    'darkcyan',
+];
+
 export function getOwner(state, id = getCurrentTileId(state)) {
     const ownership = state.properties.find(p => p.id === id);
     return ownership ? ownership.ownedBy : -1;

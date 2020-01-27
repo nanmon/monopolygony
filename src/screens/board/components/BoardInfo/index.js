@@ -17,6 +17,8 @@ function BoardInfo({
     onDoneTrade,
     onClose,
     onNext,
+    onAddPlayer,
+    onRemovePlayer,
 }) {
     function trade() {
         const propertyId = state.selected.tile.id;
@@ -36,7 +38,14 @@ function BoardInfo({
             />
         );
     } else if (state.selected == null) {
-        content = <PlayerInfo state={state} onNext={onNext} />;
+        content = (
+            <PlayerInfo
+                state={state}
+                onNext={onNext}
+                onAddPlayer={onAddPlayer}
+                onRemovePlayer={onRemovePlayer}
+            />
+        );
     } else if (state.selected.type === 'property') {
         if (state.selected.tile.type === 'property')
             content = (

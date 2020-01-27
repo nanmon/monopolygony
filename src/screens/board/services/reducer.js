@@ -14,6 +14,7 @@ import {
     isBankrupt,
     canTrade,
     canProcede,
+    PLAYER_COLORS,
 } from './util.js';
 
 export function useBoardState(preset) {
@@ -22,6 +23,7 @@ export function useBoardState(preset) {
 
 function init(preset) {
     return {
+        started: false,
         players: [
             { position: 0, money: preset.money, color: 'red', frozenTurns: -1 },
             {
@@ -58,7 +60,28 @@ function init(preset) {
 function reducer(state, action) {
     let newState = { ...state };
     switch (action.type) {
+        case 'add-player':
+            if (newState.players.length === PLAYER_COLORS.length) return state;
+            newState.players = [...state.players];
+            newState.players.push({
+                position: 0,
+                money: newState.players[0].money,
+                color: PLAYER_COLORS[newState.players.length],
+                frozenTurns: -1,
+            });
+            newState.properties = [];
+            break;
+        case 'remove-player':
+            if (newState.players.length === 2) return state;
+            newState.players = [...state.players];
+            newState.players.pop();
+            newState.properties = [];
+            break;
         case 'next': {
+            if (!state.started) {
+                newState.started = true;
+                return newState;
+            }
             if (!canProcede(newState)) return state;
             const player = state.players[state.turn];
             if (player.frozenTurns <= 0)
@@ -98,7 +121,7 @@ function reducer(state, action) {
             break;
         }
         default:
-            throw new Error('invalid action type');
+            throw new Error(`invalid action type ${action.type}`);
     }
     return newState;
 }
@@ -136,7 +159,7 @@ function unjailedMachine(state, action) {
             break;
         }
         default:
-            throw new Error('invalid action type');
+            throw new Error(`invalid phase ${state.phase}`);
     }
     return newState;
 }
@@ -179,7 +202,7 @@ function jailedMachine(state, action) {
             break;
         }
         default:
-            throw new Error('invalid action type');
+            throw new Error(`invalid phase ${state.phase}`);
     }
     return newState;
 }
@@ -275,7 +298,7 @@ function payRent(state) {
             break;
         }
         default:
-            throw new Error('invalid tile type');
+            throw new Error(`invalid tile type ${tile.type}`);
     }
     newState.players = [...state.players];
     player.money -= rent;
@@ -283,7 +306,7 @@ function payRent(state) {
     const owner = { ...state.players[ownership.ownedBy] };
     owner.money += rent;
     newState.players[ownership.ownedBy] = owner;
-    newState.phase = 'next';
+    newState.phase = 'end';
     return newState;
 }
 
@@ -578,7 +601,7 @@ function trade(state, action) {
             break;
         }
         default:
-            throw new Error('invalid trade type');
+            throw new Error(`invalid trade type ${action.type}`);
     }
     return newState;
 }

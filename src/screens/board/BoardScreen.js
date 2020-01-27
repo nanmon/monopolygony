@@ -108,6 +108,8 @@ function BoardScreen() {
                     onDoneTrade={() => dispatch({ type: 'trade-done' })}
                     onClose={() => dispatch({ type: 'select' })}
                     onNext={args => dispatch({ ...args, type: 'next' })}
+                    onAddPlayer={() => dispatch({ type: 'add-player' })}
+                    onRemovePlayer={() => dispatch({ type: 'remove-player' })}
                 />
             </div>
         </div>

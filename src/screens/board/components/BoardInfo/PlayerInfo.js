@@ -11,7 +11,7 @@ import {
     isBankrupt,
 } from '../../services/util';
 
-function PlayerInfo({ state, onNext }) {
+function PlayerInfo({ state, onNext, onAddPlayer, onRemovePlayer }) {
     function next() {
         if (state.phase === 'roll') {
             const dice1 = Math.ceil(Math.random() * 6);
@@ -41,6 +41,19 @@ function PlayerInfo({ state, onNext }) {
                 {state.players.map((_, i) => (
                     <PlayerCard key={i} state={state} playerIndex={i} />
                 ))}
+                {!state.started && (
+                    <div className="Actions">
+                        <button className="ActionButton" onClick={onAddPlayer}>
+                            +
+                        </button>
+                        <button
+                            className="ActionButton"
+                            onClick={onRemovePlayer}
+                        >
+                            -
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -49,6 +62,7 @@ function PlayerInfo({ state, onNext }) {
 export default PlayerInfo;
 
 function getNextText(state) {
+    if (!state.started) return 'Start game';
     if (isGameOver(state)) return 'Game over';
     if (!canProcede(state)) return 'Pay your debt to continue';
     if (isBankrupt(state)) return 'Bankrupt :c';
