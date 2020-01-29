@@ -18,6 +18,7 @@ declare namespace Monopolygony {
         position: ID;
         frozenTurns: number;
         sentToJail: boolean;
+        turn: number;
     }
 
     interface MiscTile {

@@ -44,7 +44,7 @@ function PlayerCard({ state, player }) {
                                     borderColor: ppty.data().groupColor,
                                     backgroundColor:
                                         ppty.data().owner === player.id
-                                            ? ppty.groupColor
+                                            ? ppty.data().groupColor
                                             : 'transparent',
                                 }}
                             />

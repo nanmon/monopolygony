@@ -42,6 +42,7 @@ module.exports.onNewGame = functions.firestore
                 frozenTurns: -1,
                 money: 1500,
                 position: 'go',
+                turn: i,
             });
             players.push(ref.id);
         });

@@ -142,9 +142,11 @@ function FireBoardScreen() {
                             onDoneTrade={() => dispatch({ type: 'trade-done' })}
                             onClose={() => dispatch({ type: 'select' })}
                             onNext={args => dispatch({ ...args, type: 'next' })}
-                            onAddPlayer={() => dispatch({ type: 'add-player' })}
-                            onRemovePlayer={() =>
-                                dispatch({ type: 'remove-player' })
+                            onAddPlayer={args =>
+                                dispatch({ ...args, type: 'add-player' })
+                            }
+                            onRemovePlayer={args =>
+                                dispatch({ ...args, type: 'remove-player' })
                             }
                         />
                     </div>
@@ -192,7 +194,7 @@ function useFireBoard(gameId) {
     }, [gameRef]);
 
     const playersRef = React.useMemo(() => {
-        return gameRef.collection('Players');
+        return gameRef.collection('Players').orderBy('turn');
     }, [gameRef]);
 
     const tradesRef = React.useMemo(() => {

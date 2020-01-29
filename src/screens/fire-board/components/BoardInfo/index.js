@@ -5,6 +5,7 @@ import RailroadInfo from './RailroadInfo.js';
 import CompanyInfo from './CompanyInfo';
 import TradeInfo from './TradeInfo';
 import './styles/BoardInfo.css';
+import { PLAYER_COLORS } from '../../services/util';
 
 function BoardInfo({
     state,
@@ -27,6 +28,19 @@ function BoardInfo({
     //     onTrade({ playerIndex: ownership.ownedBy, propertyId });
     // }
 
+    function addPlayer() {
+        const color = PLAYER_COLORS[state.players.size];
+        if (!color) return;
+        onAddPlayer({ color });
+    }
+
+    function removePlayer() {
+        const { size } = state.players;
+        if (state.players.size === 2) return;
+        const lastPlayer = state.players.docs[size - 1];
+        onRemovePlayer({ playerId: lastPlayer.id });
+    }
+
     let content = null;
     // if (state.trade.length > 0) {
     //     content = (
@@ -42,8 +56,8 @@ function BoardInfo({
         <PlayerInfo
             state={state}
             onNext={onNext}
-            onAddPlayer={onAddPlayer}
-            onRemovePlayer={onRemovePlayer}
+            onAddPlayer={addPlayer}
+            onRemovePlayer={removePlayer}
         />
     );
     // } else if (state.selected.type === 'property') {
