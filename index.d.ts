@@ -2,12 +2,14 @@ declare namespace Monopolygony {
     type ID = string;
 
     interface Game {
+        board: ID;
         started: boolean;
         turn: ID;
         phase: 'roll' | 'advance' | 'tileEffect' | 'end' | 'payFine';
         doublesCount: number;
         lastDices: [number, number];
         order: ID[];
+        initialMoney: number;
     }
 
     interface Player {
@@ -84,6 +86,12 @@ declare namespace Monopolygony {
         playerId: ID;
     }
 
+    interface TradeSetAction {
+        type: 'trade-set';
+        tradeId: ID;
+        playerId: ID;
+    }
+
     interface TradeAddAction {
         type: 'trade-add';
         tradeId: ID;
@@ -132,4 +140,13 @@ declare namespace Monopolygony {
         | TradeCancelAction
         | TradeDoneAction
         | BankruptAction;
+
+    // util
+
+    interface BoardBundle {
+        game: FirebaseFirestore.DocumentSnapshot<Game>;
+        players: FirebaseFirestore.QuerySnapshot<Player>;
+        tiles: FirebaseFirestore.QuerySnapshot<Tile>;
+        trades: FirebaseFirestore.QuerySnapshot<Trade>;
+    }
 }

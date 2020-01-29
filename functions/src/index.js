@@ -1,6 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
+admin.initializeApp();
+
 const PLAYER_COLORS = [
     'red',
     'blue',
@@ -22,8 +24,9 @@ module.exports.onNewGame = functions.firestore
             .collection(`Boards/${boardId}/Tiles`);
         const gameTilesRef = snap.ref.collection('Tiles');
         const tilesQuery = await tilesRef.get();
-        const tileProms = tilesQuery.docs.map(tileDoc => {
-            return gameTilesRef.doc(tileDoc.id).set({
+        const batch = admin.firestore().batch();
+        tilesQuery.docs.forEach(tileDoc => {
+            batch.set(gameTilesRef.doc(tileDoc.id), {
                 ...tileDoc.data(),
                 buildings: 0,
                 owner: null,
@@ -31,13 +34,25 @@ module.exports.onNewGame = functions.firestore
             });
         });
         const playersRef = snap.ref.collection('Players');
-        const playerProms = Array.from({ length: 4 }).map((_, i) => {
-            return playersRef.add({
+        let players = [];
+        Array.from({ length: 4 }).forEach((_, i) => {
+            const ref = playersRef.doc();
+            batch.set(ref, {
                 color: PLAYER_COLORS[i],
                 frozenTurns: -1,
                 money: 1500,
                 position: 'go',
             });
+            players.push(ref.id);
         });
-        await Promise.all([...tileProms, ...playerProms]);
+        batch.update(snap.ref, {
+            started: false,
+            turn: players[0],
+            phase: 'roll',
+            doublesCount: 0,
+            lastDices: [0, 0],
+            order: players,
+            initialMoney: 1500,
+        });
+        await batch.commit();
     });

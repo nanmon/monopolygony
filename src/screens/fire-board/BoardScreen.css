@@ -1,0 +1,71 @@
+.BoardScreen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #06bffd;
+}
+
+@media (max-width: 100vh) {
+    .BoardScreen {
+        flex-direction: column;
+    }
+    .BoardScreen .after-board {
+        flex-direction: row !important;
+    }
+}
+
+.BoardScreen .AfterBoard {
+    display: flex;
+    flex-shrink: 1;
+    flex-direction: column;
+    align-self: stretch;
+    overflow: hidden;
+}
+
+/* @media (min-width: 70vh) and (max-width: 130vh) {
+    .BoardScreen .before-board,
+    .BoardScreen .after-board {
+        display: none;
+    }
+} */
+
+.BoardScreen .Board {
+    width: min(100vh, 100vw);
+    height: min(100vh, 100vw);
+    display: grid;
+    /* border: 1px solid black; */
+    grid-template-rows: 2fr repeat(9, 1fr) 2fr;
+    grid-template-columns: 2fr repeat(9, 1fr) 2fr;
+    grid-template-areas:
+        'freeparking w5-1 chance2 w5-2 w5-3 railroad3 w6-1 w6-2 company2 w6-3 gotojail'
+        'w4-3 center center center center center center center center center w7-1'
+        'w4-2 center center center center center center center center center w7-2'
+        'communitychest2 center center center center center center center center center communitychest3'
+        'w4-1 center center center center center center center center center w7-3'
+        'railroad2 center center center center center center center center center railroad4'
+        'w3-3 center center center center center center center center center chance3'
+        'w3-2 center center center center center center center center center w8-1'
+        'company1 center center center center center center center center center tax2'
+        'w3-1 center center center center center center center center center w8-2'
+        'jail w2-3 w2-2 chance1 w2-1 railroad1 tax1 w1-2 communitychest1 w1-1 go';
+}
+
+.BoardScreen .center {
+    grid-area: center;
+    border: 1px solid black;
+}
+
+.BoardScreen .tile {
+    overflow: hidden;
+    border: 1px solid black;
+    font-size: min(2vh, 2vw);
+}
+
+.BoardScreen .ActionButton {
+    height: 64px;
+    background-color: #fff5;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+}

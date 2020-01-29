@@ -1,0 +1,13 @@
+.PlayerToken {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: 2px solid white;
+}
+
+.BoardScreen .tile .PlayerToken {
+    width: min(3.4vh, 3.4vw);
+    height: min(3.4vh, 3.4vw);
+    border-radius: min(2vh, 2vw);
+    border: min(0.2vh, 0.2vw) solid white;
+}

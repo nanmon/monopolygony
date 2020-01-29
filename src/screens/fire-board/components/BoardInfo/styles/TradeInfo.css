@@ -1,0 +1,44 @@
+.TradeInfo {
+    color: white;
+}
+
+.TradeCard {
+    background-color: cornflowerblue;
+    margin: 5px;
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.TradeInfo .PlayerMoney {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.TradeInfo .PlayerMoney > p {
+    margin: 0 10px;
+}
+
+.TradeInfo .Groups {
+    display: flex;
+    flex-direction: row;
+}
+
+.TradeInfo .Group {
+    display: flex;
+    flex-direction: row;
+    margin: 2px;
+}
+
+.TradeInfo .Property {
+    width: 8px;
+    height: 8px;
+    display: block;
+    border: 1px solid white;
+    /* background-color: white; */
+}
+
+.TradeInfo .ActionButton {
+    margin: 5px;
+}

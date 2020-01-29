@@ -1,0 +1,29 @@
+.BoardCenter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.BoardCenter .Turn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.BoardCenter .Turn > span {
+    margin: 0 10px;
+    width: 35px;
+}
+
+.BoardCenter .Dice {
+    display: inline-block;
+    background-color: white;
+    border: 1px solid black;
+    margin: 5px;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    font-size: 1.25em;
+    border-radius: 5px;
+}

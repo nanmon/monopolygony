@@ -1,0 +1,19 @@
+.PlayerInfo {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.PlayerInfo .Actions {
+    display: flex;
+    flex-direction: row;
+}
+
+.PlayerInfo .ActionButton {
+    margin: 5px;
+    flex-grow: 1;
+}
+
+.PlayerInfo .Players {
+    overflow: scroll;
+}

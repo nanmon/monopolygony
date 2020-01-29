@@ -1,0 +1,47 @@
+.PlayerCard.Bankrupt {
+    opacity: 0.5;
+}
+
+.PlayerCard {
+    /* border: 1px solid black; */
+    border-radius: 2px;
+    margin: 5px;
+    padding: 5px;
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.PlayerCard .Header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.PlayerCard .Token {
+    margin: 5px;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: 2px solid white;
+    display: block;
+}
+
+.PlayerCard .Content {
+    display: flex;
+    flex-direction: row;
+}
+
+.PlayerCard .Group {
+    display: flex;
+    flex-direction: row;
+    margin: 2px;
+}
+
+.PlayerCard .Property {
+    width: 8px;
+    height: 8px;
+    display: block;
+    border: 1px solid white;
+    /* background-color: white; */
+}
