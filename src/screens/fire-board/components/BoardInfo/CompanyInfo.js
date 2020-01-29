@@ -1,29 +1,26 @@
 import React from 'react';
-import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
 import {
     getCompaniesOwned,
     canMortgage,
     canUnmortgage,
     canTrade,
+    getTileOwner,
 } from '../../services/util.js';
 import './styles/CompanyInfo.css';
 
 /**
  * @param {object} props
  * @param {Monopolygony.BoardBundle} props.state
+ * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
 
-function CompanyInfo({ state, onMortgage, onTrade, onClose }) {
-    const property = properties.find(p => p.id === state.selected.tile.id);
-    const rent = property.multpliedrent;
-    const ownership = state.properties.find(
-        p => p.id === state.selected.tile.id,
-    );
-    const ownedBy = ownership && state.players[ownership.ownedBy];
+function CompanyInfo({ state, tile, onMortgage, onTrade, onClose }) {
+    const rent = tile.data().rentIncreases;
+    const ownedBy = getTileOwner(state, tile);
     let rentLvl = 0;
-    if (ownership) {
-        rentLvl = getCompaniesOwned(state, ownership.ownedBy);
+    if (ownedBy) {
+        rentLvl = getCompaniesOwned(state, ownedBy.id).length;
     }
     return (
         <div className="CompanyInfo">
@@ -51,17 +48,17 @@ function CompanyInfo({ state, onMortgage, onTrade, onClose }) {
                 </div>
             </div>
             <div className="Actions">
-                {canMortgage(state, property.id) && (
+                {canMortgage(state, tile) && (
                     <button className="ActionButton" onClick={onMortgage}>
-                        Mortgage for ${property.price * 0.5}
+                        Mortgage for ${tile.data().price * 0.5}
                     </button>
                 )}
-                {canUnmortgage(state, property.id) && (
+                {canUnmortgage(state, tile) && (
                     <button className="ActionButton" onClick={onMortgage}>
-                        Unmortgage for ${Math.ceil(property.price * 0.55)}
+                        Unmortgage for ${Math.ceil(tile.data().price * 0.55)}
                     </button>
                 )}
-                {canTrade(state, property.id) && (
+                {canTrade(state, null, tile) && (
                     <button className="ActionButton" onClick={onTrade}>
                         Trade
                     </button>

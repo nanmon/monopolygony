@@ -85,6 +85,7 @@ declare namespace Monopolygony {
     interface TradeNewAction {
         type: 'trade-new';
         playerId: ID;
+        tileId?: ID;
     }
 
     interface TradeSetAction {

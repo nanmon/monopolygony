@@ -133,7 +133,7 @@ export function getBlockOwner(state, blockName) {
         t => t.data().group === blockName,
     );
     if (blockProps.some(t => t.data().owner == null)) return null;
-    const firstPropOwner = blockProps[0].owner;
+    const firstPropOwner = blockProps[0].data().owner;
     if (blockProps.every(t => t.data().owner === firstPropOwner))
         return firstPropOwner;
     return null;
@@ -248,6 +248,7 @@ export function canUnmortgage(state, tile) {
 export function canTrade(state, trade, tile) {
     if (tile.data().owner == null) return false;
     if (blockHasHouses(state, tile.data().group)) return false;
+    if (!trade) return true;
     if (trade.data().by === tile.data().owner) return true;
     if (trade.data().with === tile.data().owner) return true;
     return false;

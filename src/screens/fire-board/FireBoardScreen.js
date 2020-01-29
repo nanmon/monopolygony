@@ -16,16 +16,18 @@ import FreeParkingHut from './components/Huts/FreeParkingHut';
 import GoToJailHut from './components/Huts/GoToJailHut';
 import PlayerToken from './components/PlayerToken';
 import BoardInfo from './components/BoardInfo';
-import { dispatcher } from './services/reducer';
+import { dispatcher } from './services/logic';
 import BoardCenter from './components/BoardCenter';
 import { isBankrupt } from './services/util';
+import { useUIReducer } from './services/ui-reducer';
 // import { bigboys, regular } from './services/presets.json';
 
 // const PRESET = process.env.NODE_ENV === 'production' ? regular : bigboys;
 
 function FireBoardScreen() {
     const { id } = useParams();
-    const state = useFireBoard(id);
+    const [state, dispatch] = useFireBoard(id);
+    const [uiState, uiDispatch] = useUIReducer();
 
     React.useEffect(() => {
         if (!state.game) return;
@@ -35,10 +37,6 @@ function FireBoardScreen() {
             });
         }
     }, [state.game]);
-
-    async function dispatch(action) {
-        await dispatcher(state, action);
-    }
 
     /**
      * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} tile
@@ -53,8 +51,7 @@ function FireBoardScreen() {
                 tileId: tile.id,
             });
         } else {
-            console.error('select tile???');
-            //dispatch({ type: 'select', tile });
+            uiDispatch({ tileId: tile.id });
         }
     }
 
@@ -97,6 +94,7 @@ function FireBoardScreen() {
             >
                 <Hut
                     state={state}
+                    ui={uiState}
                     tile={tile}
                     side={side}
                     onClick={() => onHutClick(tile)}
@@ -127,27 +125,9 @@ function FireBoardScreen() {
                     <div className="AfterBoard">
                         <BoardInfo
                             state={state}
-                            onBuyHouse={() => dispatch({ type: 'buy-house' })}
-                            onSellHouse={() => dispatch({ type: 'sell-house' })}
-                            onMortgage={() => dispatch({ type: 'mortgage' })}
-                            onTrade={args =>
-                                dispatch({ ...args, type: 'trade-add' })
-                            }
-                            onMoneyTrade={args =>
-                                dispatch({ ...args, type: 'trade-set' })
-                            }
-                            onCancelTrade={() =>
-                                dispatch({ type: 'trade-cancel' })
-                            }
-                            onDoneTrade={() => dispatch({ type: 'trade-done' })}
-                            onClose={() => dispatch({ type: 'select' })}
-                            onNext={args => dispatch({ ...args, type: 'next' })}
-                            onAddPlayer={args =>
-                                dispatch({ ...args, type: 'add-player' })
-                            }
-                            onRemovePlayer={args =>
-                                dispatch({ ...args, type: 'remove-player' })
-                            }
+                            ui={uiState}
+                            dispatch={dispatch}
+                            uiDispatch={uiDispatch}
                         />
                     </div>
                 </>
@@ -210,7 +190,7 @@ function useFireBoard(gameId) {
     /** @type {[FirebaseFirestore.QuerySnapshot<Monopolygony.Trade>]} */
     const [trades] = useCollection(tradesRef);
 
-    return {
+    const state = {
         game,
         tiles,
         players,
@@ -224,4 +204,10 @@ function useFireBoard(gameId) {
             !players.empty &&
             trades != null,
     };
+
+    async function dispatch(action) {
+        await dispatcher(state, action);
+    }
+
+    return [state, dispatch];
 }

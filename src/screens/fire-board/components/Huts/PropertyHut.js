@@ -7,7 +7,7 @@ import { getBlockOwner, getTileOwner } from '../../services/util.js';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
-function PropertyHut({ state, tile: property, side, children, onClick }) {
+function PropertyHut({ state, ui, tile: property, side, children, onClick }) {
     const classes = ['PropertyHut', side];
     const owner = getTileOwner(state, property);
     let moneyText = '$' + property.data().price;
@@ -15,7 +15,7 @@ function PropertyHut({ state, tile: property, side, children, onClick }) {
         moneyText = 'R$' + property.data().rent;
         if (property.data().mortgaged) {
             moneyText = 'M';
-        } else if (getBlockOwner(state, property.group) === owner.id) {
+        } else if (getBlockOwner(state, property.data().group) === owner.id) {
             if (property.data().buildings === 0)
                 moneyText = 'R$' + property.data().rent * 2;
             else
@@ -26,14 +26,13 @@ function PropertyHut({ state, tile: property, side, children, onClick }) {
                     ];
         }
     }
-    // if (
-    //     state.selected &&
-    //     state.selected.tile &&
-    //     state.selected.tile.id === property.id &&
-    //     state.trade.length === 0
-    // ) {
-    //     classes.push('selected');
-    // }
+    if (
+        ui.selected &&
+        ui.selected.tileId === property.id &&
+        state.trades.size === 0
+    ) {
+        classes.push('selected');
+    }
     return (
         <div
             className={classes.join(' ')}

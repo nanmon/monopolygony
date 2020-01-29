@@ -1,5 +1,4 @@
 import React from 'react';
-import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
 import {
     getBlockOwner,
@@ -8,34 +7,37 @@ import {
     canUnmortgage,
     canSellHouses,
     canTrade,
+    getTileOwner,
 } from '../../services/util.js';
 import './styles/PropertyInfo.css';
 
+/**
+ * @param {object} props
+ * @param {Monopolygony.BoardBundle} props.state
+ * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
+ */
 function PropertyInfo({
     state,
+    tile,
     onBuyHouse,
     onSellHouse,
     onMortgage,
     onTrade,
     onClose,
 }) {
-    const property = properties.find(p => p.id === state.selected.tile.id);
-    const ownership = state.properties.find(
-        p => p.id === state.selected.tile.id,
-    );
-    const ownedBy = ownership && state.players[ownership.ownedBy];
-    const blockOwner = ownership ? getBlockOwner(state, property.group) : -1;
+    const ownedBy = getTileOwner(state, tile);
+    const blockOwner = getBlockOwner(state, tile.data().group);
     let rentLvl = 0;
-    if (ownership) {
+    if (ownedBy) {
         rentLvl = 1;
-        if (blockOwner !== -1) rentLvl += ownership.houses + 1;
+        if (blockOwner !== null) rentLvl += tile.data().buildings + 1;
     }
     return (
         <div className="PropertyInfo">
             <div className="PropertyCard">
                 <div
                     className="Header"
-                    style={{ backgroundColor: property.groupColor }}
+                    style={{ backgroundColor: tile.data().groupColor }}
                 >
                     {ownedBy ? <PlayerToken player={ownedBy} /> : <span />}
                     <button onClick={onClose}>X</button>
@@ -46,66 +48,69 @@ function PropertyInfo({
                             fontWeight: rentLvl === 1 ? 'bold' : 'normal',
                         }}
                     >
-                        Rent: ${property.rent}
+                        Rent: ${tile.data().rent}
                     </p>
                     <p
                         style={{
                             fontWeight: rentLvl === 2 ? 'bold' : 'normal',
                         }}
                     >
-                        With whole block: ${property.rent * 2}
+                        With whole block: ${tile.data().rent * 2}
                     </p>
                     <p
                         style={{
                             fontWeight: rentLvl === 3 ? 'bold' : 'normal',
                         }}
                     >
-                        With 1 house: ${property.multpliedrent[0]}
+                        With 1 house: ${tile.data().rentIncreases[0]}
                     </p>
-                    {property.multpliedrent.slice(1, 4).map((r, i) => (
-                        <p
-                            key={r}
-                            style={{
-                                fontWeight:
-                                    rentLvl === i + 4 ? 'bold' : 'normal',
-                            }}
-                        >
-                            With {i + 2} houses: ${r}
-                        </p>
-                    ))}
+                    {tile
+                        .data()
+                        .rentIncreases.slice(1, 4)
+                        .map((r, i) => (
+                            <p
+                                key={r}
+                                style={{
+                                    fontWeight:
+                                        rentLvl === i + 4 ? 'bold' : 'normal',
+                                }}
+                            >
+                                With {i + 2} houses: ${r}
+                            </p>
+                        ))}
                     <p
                         style={{
                             fontWeight: rentLvl === 7 ? 'bold' : 'normal',
                         }}
                     >
-                        With hotel: ${property.multpliedrent[4]}
+                        With hotel: ${tile.data().rentIncreases[4]}
                     </p>
-                    <p>${property.housecost} per house or hotel</p>
+                    <p>${tile.data().buildingCost} per house or hotel</p>
                 </div>
             </div>
             <div className="Actions">
-                {canBuyHouses(state, property.id) && (
+                {canBuyHouses(state, tile) && (
                     <button className="ActionButton" onClick={onBuyHouse}>
-                        Buy {ownership.houses === 4 ? 'hotel' : 'house'}
+                        Buy {tile.data().buildings === 4 ? 'hotel' : 'house'}
                     </button>
                 )}
-                {canSellHouses(state, property.id) && (
+                {canSellHouses(state, tile) && (
                     <button className="ActionButton" onClick={onSellHouse}>
-                        Sell {ownership.houses === 5 ? 'hotel' : 'house'} for $
-                        {property.housecost / 2}
+                        Sell {tile.data().buildings === 5 ? 'hotel' : 'house'}{' '}
+                        for ${tile.data().buildingCost / 2}
                     </button>
                 )}
-                {canMortgage(state, property.id) && (
+                {canMortgage(state, tile) && (
                     <button className="ActionButton" onClick={onMortgage}>
-                        Mortgage for ${property.price * 0.5}
+                        Mortgage for ${tile.data().price * 0.5}
                     </button>
                 )}
-                {canUnmortgage(state, property.id) && (
+                {canUnmortgage(state, tile) && (
                     <button className="ActionButton" onClick={onMortgage}>
-                        Unmortgage for ${Math.ceil(property.price * 0.55)}
+                        Unmortgage for ${Math.ceil(tile.data().price * 0.55)}
                     </button>
                 )}
-                {canTrade(state, property.id) && (
+                {canTrade(state, null, tile) && (
                     <button className="ActionButton" onClick={onTrade}>
                         Trade
                     </button>

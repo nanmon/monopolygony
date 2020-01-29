@@ -7,7 +7,7 @@ import { getCompaniesOwned, getTileOwner } from '../../services/util.js';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
-function CompanyHut({ state, tile: company, side, children, onClick }) {
+function CompanyHut({ state, ui, tile: company, side, children, onClick }) {
     const classes = ['CompanyHut', side];
     const owner = getTileOwner(state, company);
     let moneyText = '$' + company.data().price;
@@ -19,14 +19,13 @@ function CompanyHut({ state, tile: company, side, children, onClick }) {
             moneyText = 'M';
         }
     }
-    // if (
-    //     state.selected &&
-    //     state.selected.tile &&
-    //     state.selected.tile.id === company.id &&
-    //     state.trade.length === 0
-    // ) {
-    //     classes.push('selected');
-    // }
+    if (
+        ui.selected &&
+        ui.selected.tileId === company.id &&
+        state.trades.size === 0
+    ) {
+        classes.push('selected');
+    }
     return (
         <div className={classes.join(' ')} onClick={onClick}>
             <span>Utility</span>

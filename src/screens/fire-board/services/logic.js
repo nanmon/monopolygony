@@ -167,6 +167,8 @@ function jailedMachine(state, action, batch) {
         }
         case 'end': {
             jailedEnd(state, action, batch);
+            batch.update(state.game.ref, { phase: 'roll' });
+
             break;
         }
         default:
@@ -372,7 +374,7 @@ function buyHouse(state, action, batch) {
  * @param {FirebaseFirestore.WriteBatch} batch
  */
 function sellHouse(state, action, batch) {
-    const tile = getTileById(action.tileId);
+    const tile = getTileById(state, action.tileId);
     if (!canSellHouses(state, tile)) return;
     const owner = getTileOwner(state, tile);
     batch.update(tile.ref, { buildings: tile.data().buildings - 1 });
@@ -387,7 +389,7 @@ function sellHouse(state, action, batch) {
  * @param {FirebaseFirestore.WriteBatch} batch
  */
 function mortgage(state, action, batch) {
-    const tile = getTileById(state, action.tile);
+    const tile = getTileById(state, action.tileId);
     const owner = getTileOwner(state, tile);
     if (tile.data().mortgaged) {
         if (!canUnmortgage(state, tile)) return;
@@ -446,7 +448,6 @@ function jailedEnd(state, action, batch) {
     const index = order.indexOf(turn);
     const newIndex = (index + 1) % order.length;
     batch.update(state.game.ref, { turn: order[newIndex] });
-    return batch.commit();
 }
 
 /**
