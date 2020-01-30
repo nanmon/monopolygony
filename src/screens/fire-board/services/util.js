@@ -368,3 +368,14 @@ export function isMaster(state, user) {
 export function isMyTurn(state, user) {
     return user && user.uid === state.game.data().turn;
 }
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {firebase.firestore.DocumentSnapshot<Monopolygony.Trade>} trade
+ * @param {firebase.User} user
+ */
+export function isMyTradeTurn(state, trade, user) {
+    const turn =
+        trade.data().turn === 'b' ? trade.data().by : trade.data().with;
+    return user.uid === turn;
+}

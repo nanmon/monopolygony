@@ -8,8 +8,6 @@ import './styles/BoardInfo.css';
 import { PLAYER_COLORS, getTileById } from '../../services/util';
 
 function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
-    const isMaster = user && user.uid === state.game.data().master;
-
     function addPlayer() {
         const color = PLAYER_COLORS[state.players.size];
         if (!color) return;
@@ -33,7 +31,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
         const trade = state.trades.docs[0];
         content = (
             <TradeInfo
-                isMaster={isMaster}
+                user={user}
                 state={state}
                 trade={trade}
                 onMoney={args =>
@@ -68,7 +66,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
         if (selectedTile.data().type === 'property')
             content = (
                 <PropertyInfo
-                    isMaster={isMaster}
+                    user={user}
                     state={state}
                     tile={selectedTile}
                     onBuyHouse={() =>
@@ -86,7 +84,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
                     onTrade={() =>
                         dispatch({
                             type: 'trade-new',
-                            playerId: selectedTile.data().owner,
+                            playerId: user.uid,
                             tileId: selectedTile.id,
                         })
                     }
@@ -96,7 +94,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
         else if (selectedTile.data().type === 'railroad')
             content = (
                 <RailroadInfo
-                    isMaster={isMaster}
+                    user={user}
                     state={state}
                     tile={selectedTile}
                     onMortgage={() =>
@@ -105,7 +103,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
                     onTrade={() =>
                         dispatch({
                             type: 'trade-new',
-                            playerId: selectedTile.data().owner,
+                            playerId: user.uid,
                             tileId: selectedTile.id,
                         })
                     }
@@ -115,7 +113,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
         else if (selectedTile.data().type === 'company')
             content = (
                 <CompanyInfo
-                    isMaster={isMaster}
+                    user={user}
                     state={state}
                     tile={selectedTile}
                     onMortgage={() =>
@@ -124,7 +122,7 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
                     onTrade={() =>
                         dispatch({
                             type: 'trade-new',
-                            playerId: selectedTile.data().owner,
+                            playerId: user.uid,
                             tileId: selectedTile.id,
                         })
                     }

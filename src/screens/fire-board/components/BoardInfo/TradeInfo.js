@@ -4,6 +4,7 @@ import {
     canCompleteTrade,
     getPlayerById,
     isMiscTile,
+    isMyTradeTurn,
 } from '../../services/util';
 import './styles/TradeInfo.css';
 
@@ -12,7 +13,7 @@ import './styles/TradeInfo.css';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {firebase.firestore.DocumentSnapshot<Monopolygony.Trade>} props.trade
  */
-function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
+function TradeInfo({ user, state, trade, onMoney, onCancel, onDone }) {
     const [bInput, setBInput] = React.useState('');
     const [wInput, setWInput] = React.useState('');
 
@@ -75,7 +76,7 @@ function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
                         type="number"
                         value={bInput}
                         onChange={e => onChangeMoney(e, 'by')}
-                        readOnly={!isMaster}
+                        readOnly={!isMyTradeTurn(state, trade, user)}
                     />
                 </div>
                 <div className="Groups">
@@ -109,6 +110,7 @@ function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
                             type="number"
                             value={wInput}
                             onChange={e => onChangeMoney(e, 'with')}
+                            readOnly={!isMyTradeTurn(state, trade, user)}
                         />
                     </div>
                     <div className="Groups">
@@ -133,7 +135,7 @@ function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
                     </div>
                 </div>
             )}
-            {isMaster && (
+            {isMyTradeTurn(state, trade, user) && (
                 <div className="Actions">
                     <button className="ActionButton" onClick={onCancel}>
                         Cancel Trade
@@ -143,7 +145,9 @@ function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
                         disabled={disabled}
                         onClick={onDone}
                     >
-                        Do Trade
+                        {trade.data().status === 'negotiation'
+                            ? 'Send offer'
+                            : 'Accept trade'}
                     </button>
                 </div>
             )}

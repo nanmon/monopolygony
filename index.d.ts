@@ -48,6 +48,8 @@ declare namespace Monopolygony {
         wMoney: number;
         bProperties: ID[];
         wProperties: ID[];
+        turn: 'b' | 'w';
+        status: 'negotiation' | 'waiting';
     }
 
     interface AddPlayerAction {

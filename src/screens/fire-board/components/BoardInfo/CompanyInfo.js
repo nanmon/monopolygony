@@ -6,6 +6,7 @@ import {
     canUnmortgage,
     canTrade,
     getTileOwner,
+    isMyTurn,
 } from '../../services/util.js';
 import './styles/CompanyInfo.css';
 
@@ -15,7 +16,7 @@ import './styles/CompanyInfo.css';
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
 
-function CompanyInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
+function CompanyInfo({ user, state, tile, onMortgage, onTrade, onClose }) {
     const rent = tile.data().rentIncreases;
     const ownedBy = getTileOwner(state, tile);
     let rentLvl = 0;
@@ -47,7 +48,7 @@ function CompanyInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
                     </p>
                 </div>
             </div>
-            {isMaster && (
+            {isMyTurn(state, user) && (
                 <div className="Actions">
                     {canMortgage(state, tile) && (
                         <button className="ActionButton" onClick={onMortgage}>

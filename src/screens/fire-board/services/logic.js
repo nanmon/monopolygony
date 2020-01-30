@@ -465,18 +465,26 @@ function tradeNew(state, action, batch) {
     if (existingTrade) return;
     const newTradeRef = state.game.ref.collection('Trades').doc();
     const bProperties = [];
+    const wProperties = [];
+    let wId = null;
     if (action.tileId) {
         const tile = getTileById(state, action.tileId);
-        if (tile.data().owner === action.playerId)
+        if (tile.data().owner === action.playerId) {
             bProperties.push(action.tileId);
+        } else {
+            wProperties.push(action.tileId);
+            wId = tile.data().owner;
+        }
     }
     batch.set(newTradeRef, {
         by: action.playerId,
         bProperties,
         bMoney: '0',
-        with: null,
-        wProperties: [],
+        with: wId,
+        wProperties,
         wMoney: '0',
+        turn: 'b',
+        status: 'negotiation',
     });
 }
 
@@ -491,6 +499,7 @@ function tradeSet(state, action, batch) {
     batch.update(trade.ref, {
         with: action.playerId,
         wProperties: [],
+        status: 'negotiation',
     });
 }
 
@@ -509,17 +518,18 @@ function tradeAdd(state, action, batch) {
         const tileIndex = bProperties.indexOf(tile.id);
         if (tileIndex !== -1) bProperties.splice(tileIndex, 1);
         else bProperties.push(tile.id);
-        batch.update(trade.ref, { bProperties });
+        batch.update(trade.ref, { bProperties, status: 'negotiation' });
     } else if (wId == null) {
         batch.update(trade.ref, {
             with: tile.data().owner,
             wProperties: [tile.id],
+            status: 'negotiation',
         });
     } else if (wId === tile.data().owner) {
         const tileIndex = wProperties.indexOf(tile.id);
         if (tileIndex !== -1) wProperties.splice(tileIndex, 1);
         else wProperties.push(tile.id);
-        batch.update(trade.ref, { wProperties });
+        batch.update(trade.ref, { wProperties, status: 'negotiation' });
     }
 }
 
@@ -534,12 +544,12 @@ function tradeRemove(state, action, batch) {
     const bIndex = bProperties.indexOf(action.tileId);
     if (bIndex !== -1) {
         bProperties.splice(bIndex, 1);
-        batch.update(trade.ref, { bProperties });
+        batch.update(trade.ref, { bProperties, status: 'negotiation' });
     }
     const wIndex = wProperties.indexOf(action.tileId);
     if (wIndex !== -1) {
         wProperties.splice(wIndex, 1);
-        batch.update(trade.ref, { wProperties });
+        batch.update(trade.ref, { wProperties, status: 'negotiation' });
     }
 }
 
@@ -552,9 +562,9 @@ function tradeMoney(state, action, batch) {
     const trade = getTradeById(state, action.tradeId);
     const { bMoney, wMoney } = action;
     if (bMoney != null) {
-        batch.update(trade.ref, { bMoney });
+        batch.update(trade.ref, { bMoney, status: 'negotiation' });
     } else if (wMoney != null) {
-        batch.update(trade.ref, { wMoney });
+        batch.update(trade.ref, { wMoney, status: 'negotiation' });
     }
 }
 
@@ -582,7 +592,17 @@ function tradeDone(state, action, batch) {
         wMoney,
         bProperties,
         wProperties,
+        status,
+        turn,
     } = trade.data();
+
+    if (status === 'negotiation') {
+        batch.update(trade.ref, {
+            status: 'waiting',
+            turn: turn === 'b' ? 'w' : 'b',
+        });
+        return;
+    }
 
     const bPlayer = getPlayerById(state, bId);
     batch.update(bPlayer.ref, {

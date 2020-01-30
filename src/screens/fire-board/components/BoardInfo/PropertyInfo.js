@@ -8,6 +8,7 @@ import {
     canSellHouses,
     canTrade,
     getTileOwner,
+    isMyTurn,
 } from '../../services/util.js';
 import './styles/PropertyInfo.css';
 
@@ -17,7 +18,7 @@ import './styles/PropertyInfo.css';
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
 function PropertyInfo({
-    isMaster,
+    user,
     state,
     tile,
     onBuyHouse,
@@ -89,7 +90,7 @@ function PropertyInfo({
                     <p>${tile.data().buildingCost} per house or hotel</p>
                 </div>
             </div>
-            {isMaster && (
+            {isMyTurn(state, user) && (
                 <div className="Actions">
                     {canBuyHouses(state, tile) && (
                         <button className="ActionButton" onClick={onBuyHouse}>

@@ -6,6 +6,7 @@ import {
     canUnmortgage,
     canTrade,
     getTileOwner,
+    isMyTurn,
 } from '../../services/util.js';
 import './styles/RailroadInfo.css';
 
@@ -14,7 +15,7 @@ import './styles/RailroadInfo.css';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
-function RailroadInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
+function RailroadInfo({ user, state, tile, onMortgage, onTrade, onClose }) {
     const ownedBy = getTileOwner(state, tile);
     let rentLvl = 0;
     if (ownedBy) {
@@ -42,7 +43,7 @@ function RailroadInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
                     ))}
                 </div>
             </div>
-            {isMaster && (
+            {isMyTurn(state, user) && (
                 <div className="Actions">
                     {canMortgage(state, tile) && (
                         <button className="ActionButton" onClick={onMortgage}>
