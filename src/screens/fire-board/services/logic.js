@@ -613,7 +613,11 @@ function treatBankrupcy(state, action, batch) {
     // free properties
     const props = getTilesOwnedBy(state, player.id);
     props.forEach(tile => {
-        batch.update(tile.ref, { owner: null });
+        batch.update(tile.ref, {
+            owner: null,
+            mortgaged: false,
+            buildings: 0,
+        });
     });
 
     // remove from turns
