@@ -1,5 +1,4 @@
 import React from 'react';
-import { properties } from '../../services/board.json';
 import PlayerToken from '../PlayerToken.js';
 import {
     getRailroadsOwned,
@@ -15,7 +14,7 @@ import './styles/RailroadInfo.css';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
-function RailroadInfo({ state, tile, onMortgage, onTrade, onClose }) {
+function RailroadInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
     const ownedBy = getTileOwner(state, tile);
     let rentLvl = 0;
     if (ownedBy) {
@@ -43,23 +42,26 @@ function RailroadInfo({ state, tile, onMortgage, onTrade, onClose }) {
                     ))}
                 </div>
             </div>
-            <div className="Actions">
-                {canMortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Mortgage for ${tile.data().price * 0.5}
-                    </button>
-                )}
-                {canUnmortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Unmortgage for ${Math.ceil(tile.data().price * 0.55)}
-                    </button>
-                )}
-                {canTrade(state, null, tile) && (
-                    <button className="ActionButton" onClick={onTrade}>
-                        Trade
-                    </button>
-                )}
-            </div>
+            {isMaster && (
+                <div className="Actions">
+                    {canMortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Mortgage for ${tile.data().price * 0.5}
+                        </button>
+                    )}
+                    {canUnmortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Unmortgage for $
+                            {Math.ceil(tile.data().price * 0.55)}
+                        </button>
+                    )}
+                    {canTrade(state, null, tile) && (
+                        <button className="ActionButton" onClick={onTrade}>
+                            Trade
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

@@ -18,6 +18,7 @@ import {
  */
 
 function PlayerInfo({
+    isMaster,
     state,
     onNext,
     onAddPlayer,
@@ -39,29 +40,31 @@ function PlayerInfo({
     }
     return (
         <div className="PlayerInfo">
-            <div className="Actions">
-                <button
-                    className="ActionButton"
-                    disabled={!canProcede(state)}
-                    onClick={next}
-                >
-                    {getNextText(state)}
-                </button>
-                {state.game.data().phase === 'tileEffect' &&
-                    canBuyProperty(state, tile, player) && (
-                        <button
-                            className="ActionButton"
-                            onClick={() => onNext()}
-                        >
-                            Skip
-                        </button>
-                    )}
-            </div>
+            {isMaster && (
+                <div className="Actions">
+                    <button
+                        className="ActionButton"
+                        disabled={!canProcede(state)}
+                        onClick={next}
+                    >
+                        {getNextText(state)}
+                    </button>
+                    {state.game.data().phase === 'tileEffect' &&
+                        canBuyProperty(state, tile, player) && (
+                            <button
+                                className="ActionButton"
+                                onClick={() => onNext()}
+                            >
+                                Skip
+                            </button>
+                        )}
+                </div>
+            )}
             <div className="Players">
                 {state.players.docs.map(player => (
                     <PlayerCard key={player.id} state={state} player={player} />
                 ))}
-                {!state.game.data().started && (
+                {!state.game.data().started && isMaster && (
                     <div className="Actions">
                         <button className="ActionButton" onClick={onAddPlayer}>
                             +

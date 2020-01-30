@@ -15,7 +15,7 @@ import './styles/CompanyInfo.css';
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
 
-function CompanyInfo({ state, tile, onMortgage, onTrade, onClose }) {
+function CompanyInfo({ isMaster, state, tile, onMortgage, onTrade, onClose }) {
     const rent = tile.data().rentIncreases;
     const ownedBy = getTileOwner(state, tile);
     let rentLvl = 0;
@@ -47,23 +47,26 @@ function CompanyInfo({ state, tile, onMortgage, onTrade, onClose }) {
                     </p>
                 </div>
             </div>
-            <div className="Actions">
-                {canMortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Mortgage for ${tile.data().price * 0.5}
-                    </button>
-                )}
-                {canUnmortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Unmortgage for ${Math.ceil(tile.data().price * 0.55)}
-                    </button>
-                )}
-                {canTrade(state, null, tile) && (
-                    <button className="ActionButton" onClick={onTrade}>
-                        Trade
-                    </button>
-                )}
-            </div>
+            {isMaster && (
+                <div className="Actions">
+                    {canMortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Mortgage for ${tile.data().price * 0.5}
+                        </button>
+                    )}
+                    {canUnmortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Unmortgage for $
+                            {Math.ceil(tile.data().price * 0.55)}
+                        </button>
+                    )}
+                    {canTrade(state, null, tile) && (
+                        <button className="ActionButton" onClick={onTrade}>
+                            Trade
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

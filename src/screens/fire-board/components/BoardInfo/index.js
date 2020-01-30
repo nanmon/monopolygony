@@ -7,7 +7,9 @@ import TradeInfo from './TradeInfo';
 import './styles/BoardInfo.css';
 import { PLAYER_COLORS, getTileById } from '../../services/util';
 
-function BoardInfo({ state, ui, dispatch, uiDispatch }) {
+function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
+    const isMaster = user && user.uid === state.game.data().master;
+
     function addPlayer() {
         const color = PLAYER_COLORS[state.players.size];
         if (!color) return;
@@ -26,6 +28,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
         const trade = state.trades.docs[0];
         content = (
             <TradeInfo
+                isMaster={isMaster}
                 state={state}
                 trade={trade}
                 onMoney={args =>
@@ -46,6 +49,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
     } else if (ui.selected == null) {
         content = (
             <PlayerInfo
+                isMaster={isMaster}
                 state={state}
                 onNext={args => dispatch({ ...args, type: 'next' })}
                 onAddPlayer={addPlayer}
@@ -58,6 +62,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
         if (selectedTile.data().type === 'property')
             content = (
                 <PropertyInfo
+                    isMaster={isMaster}
                     state={state}
                     tile={selectedTile}
                     onBuyHouse={() =>
@@ -85,6 +90,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
         else if (selectedTile.data().type === 'railroad')
             content = (
                 <RailroadInfo
+                    isMaster={isMaster}
                     state={state}
                     tile={selectedTile}
                     onMortgage={() =>
@@ -103,6 +109,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
         else if (selectedTile.data().type === 'company')
             content = (
                 <CompanyInfo
+                    isMaster={isMaster}
                     state={state}
                     tile={selectedTile}
                     onMortgage={() =>

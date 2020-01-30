@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import firebase from 'firebase/app';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import './BoardScreen.css';
 import PropertyHut from './components/Huts/PropertyHut';
@@ -26,17 +27,23 @@ import { useUIReducer } from './services/ui-reducer';
 
 function FireBoardScreen() {
     const { id } = useParams();
-    const [state, dispatch] = useFireBoard(id);
+    const [user] = useAuthState(firebase.auth());
+    const [state, dispatch] = useFireBoard(id, user);
     const [uiState, uiDispatch] = useUIReducer();
 
     React.useEffect(() => {
-        if (!state.game) return;
+        firebase.auth().signInAnonymously();
+    }, []);
+
+    React.useEffect(() => {
+        if (!state.game || !user) return;
         if (!state.game.exists) {
             state.game.ref.set({
                 board: 'regular',
+                master: user.uid,
             });
         }
-    }, [state.game]);
+    }, [state.game, user]);
 
     /**
      * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} tile
@@ -124,6 +131,7 @@ function FireBoardScreen() {
                     </div>
                     <div className="AfterBoard">
                         <BoardInfo
+                            user={user}
                             state={state}
                             ui={uiState}
                             dispatch={dispatch}
@@ -161,7 +169,7 @@ function getSide(state, index) {
     return ['bottom', 'left', 'top', 'right'][sideIndex];
 }
 
-function useFireBoard(gameId) {
+function useFireBoard(gameId, user) {
     const gameRef = React.useMemo(() => {
         return firebase
             .firestore()
@@ -206,7 +214,7 @@ function useFireBoard(gameId) {
     };
 
     async function dispatch(action) {
-        await dispatcher(state, action);
+        if (user.uid === game.data().master) await dispatcher(state, action);
     }
 
     return [state, dispatch];

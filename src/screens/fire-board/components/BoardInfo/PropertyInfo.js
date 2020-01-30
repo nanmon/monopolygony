@@ -17,6 +17,7 @@ import './styles/PropertyInfo.css';
  * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Tile>} props.tile
  */
 function PropertyInfo({
+    isMaster,
     state,
     tile,
     onBuyHouse,
@@ -88,34 +89,39 @@ function PropertyInfo({
                     <p>${tile.data().buildingCost} per house or hotel</p>
                 </div>
             </div>
-            <div className="Actions">
-                {canBuyHouses(state, tile) && (
-                    <button className="ActionButton" onClick={onBuyHouse}>
-                        Buy {tile.data().buildings === 4 ? 'hotel' : 'house'}
-                    </button>
-                )}
-                {canSellHouses(state, tile) && (
-                    <button className="ActionButton" onClick={onSellHouse}>
-                        Sell {tile.data().buildings === 5 ? 'hotel' : 'house'}{' '}
-                        for ${tile.data().buildingCost / 2}
-                    </button>
-                )}
-                {canMortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Mortgage for ${tile.data().price * 0.5}
-                    </button>
-                )}
-                {canUnmortgage(state, tile) && (
-                    <button className="ActionButton" onClick={onMortgage}>
-                        Unmortgage for ${Math.ceil(tile.data().price * 0.55)}
-                    </button>
-                )}
-                {canTrade(state, null, tile) && (
-                    <button className="ActionButton" onClick={onTrade}>
-                        Trade
-                    </button>
-                )}
-            </div>
+            {isMaster && (
+                <div className="Actions">
+                    {canBuyHouses(state, tile) && (
+                        <button className="ActionButton" onClick={onBuyHouse}>
+                            Buy{' '}
+                            {tile.data().buildings === 4 ? 'hotel' : 'house'}
+                        </button>
+                    )}
+                    {canSellHouses(state, tile) && (
+                        <button className="ActionButton" onClick={onSellHouse}>
+                            Sell{' '}
+                            {tile.data().buildings === 5 ? 'hotel' : 'house'}{' '}
+                            for ${tile.data().buildingCost / 2}
+                        </button>
+                    )}
+                    {canMortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Mortgage for ${tile.data().price * 0.5}
+                        </button>
+                    )}
+                    {canUnmortgage(state, tile) && (
+                        <button className="ActionButton" onClick={onMortgage}>
+                            Unmortgage for $
+                            {Math.ceil(tile.data().price * 0.55)}
+                        </button>
+                    )}
+                    {canTrade(state, null, tile) && (
+                        <button className="ActionButton" onClick={onTrade}>
+                            Trade
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

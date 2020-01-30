@@ -12,7 +12,7 @@ import './styles/TradeInfo.css';
  * @param {Monopolygony.BoardBundle} props.state
  * @param {firebase.firestore.DocumentSnapshot<Monopolygony.Trade>} props.trade
  */
-function TradeInfo({ state, trade, onMoney, onCancel, onDone }) {
+function TradeInfo({ isMaster, state, trade, onMoney, onCancel, onDone }) {
     const [bInput, setBInput] = React.useState('');
     const [wInput, setWInput] = React.useState('');
 
@@ -75,6 +75,7 @@ function TradeInfo({ state, trade, onMoney, onCancel, onDone }) {
                         type="number"
                         value={bInput}
                         onChange={e => onChangeMoney(e, 'by')}
+                        readOnly={!isMaster}
                     />
                 </div>
                 <div className="Groups">
@@ -132,18 +133,20 @@ function TradeInfo({ state, trade, onMoney, onCancel, onDone }) {
                     </div>
                 </div>
             )}
-            <div className="Actions">
-                <button className="ActionButton" onClick={onCancel}>
-                    Cancel Trade
-                </button>
-                <button
-                    className="ActionButton"
-                    disabled={disabled}
-                    onClick={onDone}
-                >
-                    Do Trade
-                </button>
-            </div>
+            {isMaster && (
+                <div className="Actions">
+                    <button className="ActionButton" onClick={onCancel}>
+                        Cancel Trade
+                    </button>
+                    <button
+                        className="ActionButton"
+                        disabled={disabled}
+                        onClick={onDone}
+                    >
+                        Do Trade
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
