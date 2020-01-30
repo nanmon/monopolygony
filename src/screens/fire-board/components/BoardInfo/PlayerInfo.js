@@ -17,10 +17,18 @@ import {
  * @param {Monopolygony.BoardBundle} props.state
  */
 
-function PlayerInfo({ state, onNext, onAddPlayer, onRemovePlayer }) {
+function PlayerInfo({
+    state,
+    onNext,
+    onAddPlayer,
+    onBankrupt,
+    onRemovePlayer,
+}) {
     const player = getPlayerInTurn(state);
     function next() {
-        if (state.game.data().phase === 'roll') {
+        if (isBankrupt(state, player)) {
+            onBankrupt({ playerId: player.id });
+        } else if (state.game.data().phase === 'roll') {
             const dice1 = Math.ceil(Math.random() * 6);
             const dice2 = Math.ceil(Math.random() * 6);
             onNext({ dice1, dice2 });

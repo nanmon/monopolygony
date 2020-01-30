@@ -1,29 +1,69 @@
 import React from 'react';
 import PlayerToken from '../PlayerToken';
-import { properties } from '../../services/board.json';
-import { canCompleteTrade } from '../../services/util';
+import {
+    canCompleteTrade,
+    getPlayerById,
+    isMiscTile,
+} from '../../services/util';
 import './styles/TradeInfo.css';
 
-function TradeInfo({ state, onMoney, onCancel, onDone }) {
-    const trade1 = state.trade[0];
-    const trade2 = state.trade[1];
-    const player1 = state.players[trade1.playerIndex];
-    const player2 = trade2 && state.players[trade2.playerIndex];
+/**
+ * @param {object} props
+ * @param {Monopolygony.BoardBundle} props.state
+ * @param {firebase.firestore.DocumentSnapshot<Monopolygony.Trade>} props.trade
+ */
+function TradeInfo({ state, trade, onMoney, onCancel, onDone }) {
+    const [bInput, setBInput] = React.useState('');
+    const [wInput, setWInput] = React.useState('');
+
+    React.useEffect(() => {
+        const timerId = setTimeout(() => {
+            onMoney({ bMoney: bInput });
+        }, 500);
+        return () => clearTimeout(timerId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [bInput]);
+
+    React.useEffect(() => {
+        const timerId = setTimeout(() => {
+            onMoney({ wMoney: wInput });
+        }, 500);
+        return () => clearTimeout(timerId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [wInput]);
+
+    const { bMoney, wMoney } = trade.data();
+    React.useEffect(() => {
+        setBInput(bMoney);
+    }, [bMoney]);
+    React.useEffect(() => {
+        setWInput(wMoney);
+    }, [wMoney]);
+
+    const player1 = getPlayerById(state, trade.data().by);
+    const player2 =
+        trade.data().with && getPlayerById(state, trade.data().with);
 
     const groups = {};
-    properties.forEach(p => {
-        const ownership = state.properties.find(o => o.id === p.id);
-        const property = { ...p, ownership };
-        if (!groups[p.group]) groups[p.group] = [property];
-        else groups[p.group].push(property);
+    state.tiles.docs.forEach(p => {
+        if (isMiscTile(p)) return;
+        const groupName = p.data().group;
+        if (!groups[groupName]) groups[groupName] = [p];
+        else groups[groupName].push(p);
     });
 
-    function onChangeMoney(e, trade) {
+    function onChangeMoney(e, who) {
         const { value } = e.target;
-        onMoney({ playerIndex: trade.playerIndex, money: value });
+        if (who === 'by') {
+            setBInput(value);
+            // onMoney({ tradeId: trade.id, bMoney: value });
+        } else {
+            setWInput(value);
+            // onMoney({ tradeId: trade.id, wMoney: value });
+        }
     }
 
-    const disabled = !canCompleteTrade(state);
+    const disabled = !canCompleteTrade(state, trade);
 
     return (
         <div className="TradeInfo">
@@ -33,8 +73,8 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                     <p>Money:</p>
                     <input
                         type="number"
-                        value={trade1.moneyStr}
-                        onChange={e => onChangeMoney(e, trade1)}
+                        value={bInput}
+                        onChange={e => onChangeMoney(e, 'by')}
                     />
                 </div>
                 <div className="Groups">
@@ -45,8 +85,12 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                                     key={ppty.id}
                                     className="Property"
                                     style={{
-                                        borderColor: ppty.groupColor,
-                                        backgroundColor: getColor(ppty, trade1),
+                                        borderColor: ppty.data().groupColor,
+                                        backgroundColor: getColor(
+                                            trade,
+                                            ppty,
+                                            'by',
+                                        ),
                                     }}
                                 />
                             ))}
@@ -55,15 +99,15 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                 </div>
             </div>
 
-            {trade2 && (
+            {player2 && (
                 <div className="TradeCard">
                     <div className="PlayerMoney">
                         <PlayerToken player={player2} />
                         <p>Money:</p>
                         <input
                             type="number"
-                            value={trade2.moneyStr}
-                            onChange={e => onChangeMoney(e, trade2)}
+                            value={wInput}
+                            onChange={e => onChangeMoney(e, 'with')}
                         />
                     </div>
                     <div className="Groups">
@@ -74,10 +118,11 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
                                         key={ppty.id}
                                         className="Property"
                                         style={{
-                                            borderColor: ppty.groupColor,
+                                            borderColor: ppty.data().groupColor,
                                             backgroundColor: getColor(
+                                                trade,
                                                 ppty,
-                                                trade2,
+                                                'with',
                                             ),
                                         }}
                                     />
@@ -105,16 +150,21 @@ function TradeInfo({ state, onMoney, onCancel, onDone }) {
 
 export default TradeInfo;
 
-function getColor(property, tradeObj) {
-    if (
-        !property.ownership ||
-        property.ownership.ownedBy !== tradeObj.playerIndex
-    )
-        return 'transparent';
-    if (tradeObj.properties.find(pId => pId === property.ownership.id)) {
-        if (property.group === 'Railroad' || property.group === 'Utilities')
+function getColor(trade, tile, who) {
+    let playerId = trade.data().by;
+    let trading = trade.data().bProperties;
+    if (who === 'with') {
+        playerId = trade.data().with;
+        trading = trade.data().wProperties;
+    }
+    if (tile.data().owner !== playerId) return 'transparent';
+    else if (trading.includes(tile.id)) {
+        if (
+            tile.data().groupColor === 'white' ||
+            tile.data().groupColor === 'Yellow'
+        )
             return 'lightgray';
         return 'white';
     }
-    return property.groupColor;
+    return tile.data().groupColor;
 }

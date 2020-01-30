@@ -8,13 +8,6 @@ import './styles/BoardInfo.css';
 import { PLAYER_COLORS, getTileById } from '../../services/util';
 
 function BoardInfo({ state, ui, dispatch, uiDispatch }) {
-    function trade() {
-        // const propertyId = state.selected.tile.id;
-        // const ownership = state.properties.find(p => p.id === propertyId);
-        // if (!ownership) return;
-        // onTrade({ playerIndex: ownership.ownedBy, propertyId });
-    }
-
     function addPlayer() {
         const color = PLAYER_COLORS[state.players.size];
         if (!color) return;
@@ -30,12 +23,24 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
 
     let content = null;
     if (state.trades.size > 0) {
+        const trade = state.trades.docs[0];
         content = (
             <TradeInfo
                 state={state}
-                // onMoney={onMoneyTrade}
-                // onCancel={onCancelTrade}
-                // onDone={onDoneTrade}
+                trade={trade}
+                onMoney={args =>
+                    dispatch({
+                        ...args,
+                        type: 'trade-money',
+                        tradeId: trade.id,
+                    })
+                }
+                onCancel={() =>
+                    dispatch({ type: 'trade-cancel', tradeId: trade.id })
+                }
+                onDone={() =>
+                    dispatch({ type: 'trade-done', tradeId: trade.id })
+                }
             />
         );
     } else if (ui.selected == null) {
@@ -45,6 +50,7 @@ function BoardInfo({ state, ui, dispatch, uiDispatch }) {
                 onNext={args => dispatch({ ...args, type: 'next' })}
                 onAddPlayer={addPlayer}
                 onRemovePlayer={removePlayer}
+                onBankrupt={args => dispatch({ ...args, type: 'bankrupt' })}
             />
         );
     } else if (ui.selected.tileId) {

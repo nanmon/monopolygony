@@ -250,6 +250,7 @@ export function canTrade(state, trade, tile) {
     if (blockHasHouses(state, tile.data().group)) return false;
     if (!trade) return true;
     if (trade.data().by === tile.data().owner) return true;
+    if (trade.data().with == null) return true;
     if (trade.data().with === tile.data().owner) return true;
     return false;
 }
@@ -298,16 +299,20 @@ export function isBankrupt(state, player) {
     return payable < debt; // can't pay debt
 }
 
-export function canCompleteTrade(state) {
-    if (state.trade.length !== 2) return false;
-    const trade1 = state.trade[0];
-    if (trade1.moneyStr === '' || trade1.money < 0) return false;
-    const player1 = state.players[trade1.playerIndex];
-    if (player1.money < trade1.money) return false;
-    const trade2 = state.trade[1];
-    if (trade2.moneyStr === '' || trade2.money < 0) return false;
-    const player2 = state.players[trade2.playerIndex];
-    if (player2.money < trade2.money) return false;
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {FirebaseFirestore.DocumentSnapshot<Monopolygony.Trade>} trade
+ */
+export function canCompleteTrade(state, trade) {
+    if (!trade.data().with) return false;
+    const bMoney = Number(trade.data().bMoney);
+    const wMoney = Number(trade.data().wMoney);
+    if (bMoney < 0) return false;
+    const player1 = getPlayerById(state, trade.data().by);
+    if (player1.data().money < bMoney) return false;
+    if (wMoney < 0) return false;
+    const player2 = getPlayerById(state, trade.data().with);
+    if (player2.data().money < wMoney) return false;
     return true;
 }
 

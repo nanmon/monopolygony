@@ -20,6 +20,7 @@ import {
     getPlayerById,
     canBuyProperty,
     isBuyable,
+    getTilesOwnedBy,
 } from './util';
 
 /**
@@ -459,13 +460,19 @@ function tradeNew(state, action, batch) {
     const existingTrade = getTradeByPlayer(state, action.playerId);
     if (existingTrade) return;
     const newTradeRef = state.game.ref.collection('Trades').doc();
+    const bProperties = [];
+    if (action.tileId) {
+        const tile = getTileById(state, action.tileId);
+        if (tile.data().owner === action.playerId)
+            bProperties.push(action.tileId);
+    }
     batch.set(newTradeRef, {
         by: action.playerId,
-        bProperties: [],
-        bMoney: 0,
+        bProperties,
+        bMoney: '0',
         with: null,
         wProperties: [],
-        wMoney: 0,
+        wMoney: '0',
     });
 }
 
@@ -476,7 +483,7 @@ function tradeNew(state, action, batch) {
  */
 function tradeSet(state, action, batch) {
     const trade = getTradeById(state, action.tradeId);
-    batch.set(trade.ref, {
+    batch.update(trade.ref, {
         with: action.playerId,
     });
 }
@@ -489,17 +496,24 @@ function tradeSet(state, action, batch) {
 function tradeAdd(state, action, batch) {
     const trade = getTradeById(state, action.tradeId);
     if (!trade) return;
-    const tile = getTileById(action.tileId);
-    if (!canTrade(state, tile)) return;
-    if (trade.data().by === tile.data().owner) {
-        batch.update(trade.ref, {
-            bProperties: [...trade.data().bProperties, tile.id],
-        });
-    } else if (trade.data().with === tile.data().owner) {
+    const tile = getTileById(state, action.tileId);
+    if (!canTrade(state, trade, tile)) return;
+    const { by: bId, with: wId, bProperties, wProperties } = trade.data();
+    if (bId === tile.data().owner) {
+        const tileIndex = bProperties.indexOf(tile.id);
+        if (tileIndex !== -1) bProperties.splice(tileIndex, 1);
+        else bProperties.push(tile.id);
+        batch.update(trade.ref, { bProperties });
+    } else if (wId == null) {
         batch.update(trade.ref, {
             with: tile.data().owner,
-            wProperties: [...trade.data().wProperties, tile.id],
+            wProperties: [tile.id],
         });
+    } else if (wId === tile.data().owner) {
+        const tileIndex = wProperties.indexOf(tile.id);
+        if (tileIndex !== -1) wProperties.splice(tileIndex, 1);
+        else wProperties.push(tile.id);
+        batch.update(trade.ref, { wProperties });
     }
 }
 
@@ -564,25 +578,26 @@ function tradeDone(state, action, batch) {
         wProperties,
     } = trade.data();
 
-    const bPlayer = getPlayerById(bId);
+    const bPlayer = getPlayerById(state, bId);
     batch.update(bPlayer.ref, {
-        money: bPlayer.data().money + wMoney - bMoney,
+        money: bPlayer.data().money + Number(wMoney) - Number(bMoney),
     });
 
-    const wPlayer = getPlayerById(wId);
+    const wPlayer = getPlayerById(state, wId);
     batch.update(wPlayer.ref, {
-        money: wPlayer.data().money + bMoney - wMoney,
+        money: wPlayer.data().money + Number(bMoney) - Number(wMoney),
     });
 
     bProperties.forEach(tileId => {
-        const tile = getTileById(tileId);
+        const tile = getTileById(state, tileId);
         batch.update(tile.ref, { owner: wId });
     });
 
     wProperties.forEach(tileId => {
-        const tile = getTileById(tileId);
+        const tile = getTileById(state, tileId);
         batch.update(tile.ref, { owner: bId });
     });
+    batch.delete(trade.ref);
 }
 
 /**
@@ -591,8 +606,17 @@ function tradeDone(state, action, batch) {
  * @param {FirebaseFirestore.WriteBatch} batch
  */
 function treatBankrupcy(state, action, batch) {
-    const player = getPlayerById(action.playerId);
+    // bankrupt: true
+    const player = getPlayerById(state, action.playerId);
     batch.update(player.ref, { bankrupt: true });
+
+    // free properties
+    const props = getTilesOwnedBy(state, player.id);
+    props.forEach(tile => {
+        batch.update(tile.ref, { owner: null });
+    });
+
+    // remove from turns
     let { order, turn } = state.game.data();
     const pIndex = order.indexOf(player.id);
     if (turn === player.id) {
