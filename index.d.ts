@@ -60,6 +60,12 @@ declare namespace Monopolygony {
         playerId: ID;
     }
 
+    interface JoinGameAction {
+        type: 'join-game';
+        userId: ID;
+        color: string;
+    }
+
     interface NextAction {
         type: 'next';
         dice1?: number;
@@ -131,6 +137,7 @@ declare namespace Monopolygony {
     type Action =
         | AddPlayerAction
         | RemovePlayerAction
+        | JoinGameAction
         | NextAction
         | BuyHouseAction
         | SellHouseAction

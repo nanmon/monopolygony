@@ -86,6 +86,9 @@ export function dispatcher(state, action) {
         case 'remove-player':
             removePlayer(state, action, batch);
             break;
+        case 'join-game':
+            joinGame(state, action, batch);
+            break;
         default:
             throw new Error(`invalid action type ${action.type}`);
     }
@@ -666,5 +669,25 @@ function removePlayer(state, action, batch) {
     const { order } = state.game.data();
     const index = order.indexOf(action.playerId);
     order.splice(index, 1);
+    batch.update(state.game.ref, { order });
+}
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {Monopolygony.JoinGameAction} action
+ * @param {FirebaseFirestore.WriteBatch} batch
+ */
+function joinGame(state, action, batch) {
+    // if (newState.players.length === 2) return state;
+    const playerRef = state.game.ref.collection('Players').doc(action.userId);
+    batch.set(playerRef, {
+        position: 'go',
+        money: state.game.data().initialMoney,
+        color: action.color,
+        frozenTurns: -1,
+        turn: state.players.size,
+    });
+    const { order } = state.game.data();
+    order.push(playerRef.id);
     batch.update(state.game.ref, { order });
 }

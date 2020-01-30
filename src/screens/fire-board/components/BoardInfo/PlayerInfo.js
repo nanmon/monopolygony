@@ -10,6 +10,9 @@ import {
     isBankrupt,
     getPlayerInTurn,
     getPlayerTile,
+    canJoinGame,
+    isMaster,
+    isMyTurn,
 } from '../../services/util';
 
 /**
@@ -18,9 +21,10 @@ import {
  */
 
 function PlayerInfo({
-    isMaster,
+    user,
     state,
     onNext,
+    onJoinGame,
     onAddPlayer,
     onBankrupt,
     onRemovePlayer,
@@ -38,33 +42,41 @@ function PlayerInfo({
             onNext({ buy: true });
         }
     }
+
     return (
         <div className="PlayerInfo">
-            {isMaster && (
-                <div className="Actions">
-                    <button
-                        className="ActionButton"
-                        disabled={!canProcede(state)}
-                        onClick={next}
-                    >
-                        {getNextText(state)}
+            <div className="Actions">
+                {isMyTurn(state, user) && (
+                    <>
+                        <button
+                            className="ActionButton"
+                            disabled={!canProcede(state)}
+                            onClick={next}
+                        >
+                            {getNextText(state)}
+                        </button>
+                        {state.game.data().phase === 'tileEffect' &&
+                            canBuyProperty(state, tile, player) && (
+                                <button
+                                    className="ActionButton"
+                                    onClick={() => onNext()}
+                                >
+                                    Skip
+                                </button>
+                            )}
+                    </>
+                )}
+                {canJoinGame(state, user) && (
+                    <button className="ActionButton" onClick={onJoinGame}>
+                        Join Game
                     </button>
-                    {state.game.data().phase === 'tileEffect' &&
-                        canBuyProperty(state, tile, player) && (
-                            <button
-                                className="ActionButton"
-                                onClick={() => onNext()}
-                            >
-                                Skip
-                            </button>
-                        )}
-                </div>
-            )}
+                )}
+            </div>
             <div className="Players">
                 {state.players.docs.map(player => (
                     <PlayerCard key={player.id} state={state} player={player} />
                 ))}
-                {!state.game.data().started && isMaster && (
+                {!state.game.data().started && isMaster(state, user) && (
                     <div className="Actions">
                         <button className="ActionButton" onClick={onAddPlayer}>
                             +

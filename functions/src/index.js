@@ -3,17 +3,6 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-const PLAYER_COLORS = [
-    'red',
-    'blue',
-    'green',
-    'gold',
-    'purple',
-    'darkorange',
-    'pink',
-    'darkcyan',
-];
-
 module.exports.onNewGame = functions.firestore
     .document('Games/{id}')
     .onCreate(async (snap, _ctx) => {
@@ -34,25 +23,21 @@ module.exports.onNewGame = functions.firestore
             });
         });
         const playersRef = snap.ref.collection('Players');
-        let players = [];
-        Array.from({ length: 4 }).forEach((_, i) => {
-            const ref = playersRef.doc();
-            batch.set(ref, {
-                color: PLAYER_COLORS[i],
-                frozenTurns: -1,
-                money: 1500,
-                position: 'go',
-                turn: i,
-            });
-            players.push(ref.id);
+        const playerRef = playersRef.doc(data.master);
+        batch.set(playerRef, {
+            color: 'red',
+            frozenTurns: -1,
+            money: 1500,
+            position: 'go',
+            turn: 0,
         });
         batch.update(snap.ref, {
             started: false,
-            turn: players[0],
+            turn: playerRef.id,
             phase: 'roll',
             doublesCount: 0,
             lastDices: [0, 0],
-            order: players,
+            order: [playerRef.id],
             initialMoney: 1500,
         });
         await batch.commit();

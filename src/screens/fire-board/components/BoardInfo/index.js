@@ -23,6 +23,11 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
         dispatch({ type: 'remove-player', playerId: lastPlayer.id });
     }
 
+    function joinGame() {
+        const color = PLAYER_COLORS[state.players.size];
+        dispatch({ type: 'join-game', userId: user.uid, color });
+    }
+
     let content = null;
     if (state.trades.size > 0) {
         const trade = state.trades.docs[0];
@@ -49,12 +54,13 @@ function BoardInfo({ user, state, ui, dispatch, uiDispatch }) {
     } else if (ui.selected == null) {
         content = (
             <PlayerInfo
-                isMaster={isMaster}
+                user={user}
                 state={state}
                 onNext={args => dispatch({ ...args, type: 'next' })}
                 onAddPlayer={addPlayer}
                 onRemovePlayer={removePlayer}
                 onBankrupt={args => dispatch({ ...args, type: 'bankrupt' })}
+                onJoinGame={joinGame}
             />
         );
     } else if (ui.selected.tileId) {

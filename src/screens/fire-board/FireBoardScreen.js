@@ -214,7 +214,7 @@ function useFireBoard(gameId, user) {
     };
 
     async function dispatch(action) {
-        if (user.uid === game.data().master) await dispatcher(state, action);
+        await dispatcher(state, action);
     }
 
     return [state, dispatch];

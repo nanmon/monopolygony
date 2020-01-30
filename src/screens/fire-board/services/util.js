@@ -338,3 +338,33 @@ export function isGameOver(state) {
     if (bankruptPlayers.length === state.players.docs.length - 1) return true;
     return false;
 }
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {firebase.User} user
+ */
+export function canJoinGame(state, user) {
+    if (!user) return false;
+    if (state.game.data().started) return false;
+    if (state.players.size >= PLAYER_COLORS.length) return false;
+    const isMaster = user.uid === state.game.data().master;
+    if (isMaster) return false;
+    const hasJoined = state.players.docs.some(p => p.id === user.uid);
+    return !hasJoined;
+}
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {firebase.User} user
+ */
+export function isMaster(state, user) {
+    return user && user.uid === state.game.data().master;
+}
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {firebase.User} user
+ */
+export function isMyTurn(state, user) {
+    return user && user.uid === state.game.data().turn;
+}
