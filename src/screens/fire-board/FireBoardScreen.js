@@ -19,7 +19,7 @@ import PlayerToken from './components/PlayerToken';
 import BoardInfo from './components/BoardInfo';
 import { dispatcher } from './services/logic';
 import BoardCenter from './components/BoardCenter';
-import { isBankrupt } from './services/util';
+import { isBankrupt, isMyTradeTurn } from './services/util';
 import { useUIReducer } from './services/ui-reducer';
 // import { bigboys, regular } from './services/presets.json';
 
@@ -52,6 +52,7 @@ function FireBoardScreen() {
         if (state.trades.size > 0) {
             const trade = state.trades.docs[0];
             if (tile.data().owner == null) return;
+            if (!isMyTradeTurn(state, trade, user)) return;
             dispatch({
                 type: 'trade-add',
                 tradeId: trade.id,
@@ -68,6 +69,11 @@ function FireBoardScreen() {
     function onPlayerClick(player) {
         if (state.trades.size > 0) {
             const trade = state.trades.docs[0];
+            if (
+                trade.data().by !== user.uid ||
+                !isMyTradeTurn(state, trade, user)
+            )
+                return;
             return e => {
                 e.stopPropagation();
                 dispatch({
