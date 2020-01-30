@@ -305,12 +305,13 @@ export function isBankrupt(state, player) {
  */
 export function canCompleteTrade(state, trade) {
     if (!trade.data().with) return false;
+    if (trade.data().bMoney === '' || trade.data().wMoney === '') return false;
     const bMoney = Number(trade.data().bMoney);
     const wMoney = Number(trade.data().wMoney);
-    if (bMoney < 0) return false;
+    if (bMoney < 0 || bMoney % 1 !== 0 || isNaN(bMoney)) return false;
     const player1 = getPlayerById(state, trade.data().by);
     if (player1.data().money < bMoney) return false;
-    if (wMoney < 0) return false;
+    if (wMoney < 0 || wMoney % 1 !== 0 || isNaN(wMoney)) return false;
     const player2 = getPlayerById(state, trade.data().with);
     if (player2.data().money < wMoney) return false;
     return true;

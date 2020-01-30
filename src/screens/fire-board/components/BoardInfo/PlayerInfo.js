@@ -25,6 +25,7 @@ function PlayerInfo({
     onRemovePlayer,
 }) {
     const player = getPlayerInTurn(state);
+    const tile = getPlayerTile(state, player);
     function next() {
         if (isBankrupt(state, player)) {
             onBankrupt({ playerId: player.id });
@@ -47,7 +48,7 @@ function PlayerInfo({
                     {getNextText(state)}
                 </button>
                 {state.game.data().phase === 'tileEffect' &&
-                    canBuyProperty(state, player) && (
+                    canBuyProperty(state, tile, player) && (
                         <button
                             className="ActionButton"
                             onClick={() => onNext()}

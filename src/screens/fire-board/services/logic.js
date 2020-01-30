@@ -425,6 +425,7 @@ function jailedRoll(state, action, batch) {
         gameUpdate.phase = 'end';
     }
     batch.update(state.game.ref, gameUpdate);
+    return gameUpdate.phase;
 }
 
 /**
@@ -483,8 +484,10 @@ function tradeNew(state, action, batch) {
  */
 function tradeSet(state, action, batch) {
     const trade = getTradeById(state, action.tradeId);
+    if (action.playerId === trade.data().by) return;
     batch.update(trade.ref, {
         with: action.playerId,
+        wProperties: [],
     });
 }
 
