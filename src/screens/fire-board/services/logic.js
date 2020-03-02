@@ -124,6 +124,11 @@ function unjailedMachine(state, action, batch) {
             }
             break;
         }
+        case 'chest': {
+            chestEffect(state, action, batch);
+
+            break;
+        }
         case 'end': {
             nextTurn(state, action, batch);
             break;
@@ -319,21 +324,21 @@ function tryBuy(state, _action, batch) {
 function applyMisc(state, action, batch) {
     const player = getPlayerInTurn(state);
     const tile = getPlayerTile(state, player);
-    switch (tile.id) {
-        case 'tax1':
-            batch.update(player.ref, { money: player.data().money - 200 });
-            break;
-        case 'tax2':
-            batch.update(player.ref, { money: player.data().money - 100 });
+    switch (tile.type) {
+        case 'tax':
+            const tax = tile.id === 'tax1' ? 200 : 100;
+            batch.update(player.ref, { money: player.data().money - tax });
             break;
         case 'gotojail':
             batch.update(player.ref, { position: 'jail', sentToJail: true });
             break;
+        case 'chest':
+            batch.update(state.game.ref, { phase: 'chest' });
+            return 'chest';
         default:
+            batch.update(state.game.ref, { phase: 'end' });
             return;
-        // throw new Error('invalid tile id');
     }
-    batch.update(state.game.ref, { phase: 'end' });
     return 'end';
 }
 
@@ -710,4 +715,96 @@ function joinGame(state, action, batch) {
     const { order } = state.game.data();
     order.push(playerRef.id);
     batch.update(state.game.ref, { order });
+}
+
+/**
+ * @param {Monopolygony.BoardBundle} state
+ * @param {Monopolygony.JoinGameAction} action
+ * @param {FirebaseFirestore.WriteBatch} batch
+ */
+function chestEffect(state, action, batch) {
+    const player = getPlayerInTurn(state);
+    switch (action.chestType) {
+        case 'move_to_id': {
+            const tile = getPlayerTile(state, player);
+            const newTile = getTileById(state, action.tileId);
+            const newPosition = newTile.data().position;
+
+            const playerUpdate = { position: newTile.id };
+            if (newPosition < tile.data().position) {
+                // passed GO
+                playerUpdate.money = player.data().money + 200;
+            }
+            batch.update(player.ref, playerUpdate);
+            break;
+        }
+        case 'move_to_nearest': {
+            const tile = getPlayerTile(state, player);
+            const newTile = getTileById(state, action.tileId);
+            const newPosition = newTile.data().position;
+
+            const playerUpdate = { position: newTile.id };
+            if (newPosition < tile.data().position) {
+                // passed GO
+                playerUpdate.money = player.data().money + 200;
+            }
+            batch.update(player.ref, playerUpdate);
+            break;
+        }
+        case 'get_bank_money': {
+            batch.update(player.ref, {
+                money: player.data().money + action.amount,
+            });
+            break;
+        }
+        case 'outofjail': {
+            batch.update(player.ref, {
+                outOfJailCards: (player.data().outOfJailCards || 0) + 1,
+            });
+            break;
+        }
+        case 'gotojail': {
+            batch.update(player.ref, { position: 'jail', sentToJail: true });
+            break;
+        }
+        case 'get_players_money': {
+            let sum = 0;
+            state.players.docs.forEach(p => {
+                if (p.id === player.id) return;
+                batch.update(p.ref, {
+                    money: p.data().money - action.amount,
+                });
+                sum += action.amount;
+            });
+            batch.update(player.ref, {
+                money: player.data().money + sum,
+            });
+            break;
+        }
+        case 'property_charges': {
+            const properties = state.tiles.docs.filter(
+                t => t.data().owner === player.id,
+            );
+            const buildings = properties.map(p => p.data().buildings);
+            let totalHouses = 0,
+                totalHotels = 0;
+            buildings.forEach(b => {
+                if (b === 5) {
+                    totalHouses += 4;
+                    totalHotels += 1;
+                } else {
+                    totalHouses += b;
+                }
+            });
+            const charges =
+                totalHouses * action.perHouse + totalHotels * action.perHotel;
+            batch.update(player.ref, {
+                money: player.data().money - charges,
+            });
+            break;
+        }
+        default:
+            break;
+    }
+    batch.update(state.game.ref, { phase: 'end' });
 }
